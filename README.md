@@ -18,7 +18,7 @@ Los clientes eligen un diseño del catálogo y lo aplican al producto de su elec
 
 ### Fase 1 — Catálogo ✅ / 🔄 / ⬜
 
-- [ ] Autenticación JWT con roles (Admin, Cliente)
+- [X] Autenticación JWT con roles (Admin, Cliente)
 - [ ] Gestión de productos con variantes (talla, color, stock)
 - [ ] Catálogo de diseños con imágenes (Cloudinary)
 - [ ] Asignación de diseños a productos con precio extra
