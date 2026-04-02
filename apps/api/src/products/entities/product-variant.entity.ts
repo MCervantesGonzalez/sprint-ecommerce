@@ -27,7 +27,15 @@ export class ProductVariant {
   @Column({ default: 0 })
   stock: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseFloat(value),
+    },
+  })
   base_price: number;
 
   @Column({ default: true })
