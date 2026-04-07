@@ -22,6 +22,7 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Public } from 'src/common/decorators/public.decorator';
 import { Role } from 'src/common/enums/role.enum';
+import multer from 'multer';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('designs')
