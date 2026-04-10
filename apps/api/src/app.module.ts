@@ -7,6 +7,7 @@ import { ProductsModule } from './products/products.module';
 import { StorageModule } from './storage/storage.module';
 import { DesignsModule } from './designs/designs.module';
 import { CartModule } from './cart/cart.module';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { CartModule } from './cart/cart.module';
     StorageModule,
     DesignsModule,
     CartModule,
+    OrdersModule,
   ],
   controllers: [],
   providers: [],
