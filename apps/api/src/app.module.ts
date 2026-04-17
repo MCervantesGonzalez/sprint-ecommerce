@@ -8,6 +8,7 @@ import { StorageModule } from './storage/storage.module';
 import { DesignsModule } from './designs/designs.module';
 import { CartModule } from './cart/cart.module';
 import { OrdersModule } from './orders/orders.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { OrdersModule } from './orders/orders.module';
     DesignsModule,
     CartModule,
     OrdersModule,
+    PaymentsModule,
   ],
   controllers: [],
   providers: [],
