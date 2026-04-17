@@ -26,11 +26,11 @@ Los clientes eligen un diseño del catálogo y lo aplican al producto de su elec
 
 ### Fase 2 — Flujo de compra ⬜
 
-- [ ] Carrito de compras persistente
-- [ ] Gestión de órdenes con estados
-- [ ] Integración con MercadoPago
-- [ ] Webhook de confirmación de pago
-- [ ] Actualización automática de stock
+- [x] Carrito de compras persistente
+- [x] Gestión de órdenes con estados
+- [x] Integración con MercadoPago
+- [x] Webhook de confirmación de pago
+- [x] Actualización automática de stock
 
 ### Fase 3 — Operación ⬜
 
