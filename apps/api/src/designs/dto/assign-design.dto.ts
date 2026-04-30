@@ -1,9 +1,12 @@
 import { IsUUID, IsNumber, IsOptional, Min } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class AssignDesignDto {
+  @ApiProperty({ example: '3c24a01b-6094-4165-9407-af7f3c9ca05c' })
   @IsUUID()
-  designId: string;
+  designId!: string;
 
+  @ApiPropertyOptional({ example: 20.0 })
   @IsNumber()
   @IsOptional()
   @Min(0)
