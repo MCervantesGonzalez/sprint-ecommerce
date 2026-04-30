@@ -68,7 +68,7 @@ export class CartController {
 
   @Delete('items/:itemId')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Eliminar item dekl carrito' })
+  @ApiOperation({ summary: 'Eliminar item del carrito' })
   @ApiParam({ name: 'itemID', description: 'UUID del item en el carrito' })
   @ApiResponse({ status: 204, description: 'Item eliminado' })
   @ApiResponse({ status: 404, description: 'Item no encontrado' })

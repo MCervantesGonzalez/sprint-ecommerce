@@ -19,7 +19,7 @@ export class PaymentsService {
     private readonly orderRepository: Repository<Order>,
   ) {
     this.mpClient = new MercadopagoConfig({
-      accessToken: this.config.get<string>('MP_ACCESS_TOKEN'),
+      accessToken: this.config.get<string>('MP_ACCESS_TOKEN')!,
     });
   }
 
