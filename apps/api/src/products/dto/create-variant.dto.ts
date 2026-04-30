@@ -5,22 +5,28 @@ import {
   IsBoolean,
   Min,
 } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateVariantDto {
+  @ApiProperty({ example: '11oz' })
   @IsString()
-  size: string;
+  size!: string;
 
+  @ApiProperty({ example: 'Blanco' })
   @IsString()
-  color: string;
+  color!: string;
 
+  @ApiProperty({ example: 50 })
   @IsNumber()
   @Min(0)
-  stock: number;
+  stock!: number;
 
+  @ApiProperty({ example: 150.0 })
   @IsNumber()
   @Min(0)
-  base_price: number;
+  base_price!: number;
 
+  @ApiPropertyOptional({ example: true })
   @IsBoolean()
   @IsOptional()
   active?: boolean;
