@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import MercadopagoConfig, { Preference, Payment } from 'mercadopago';
 import { Order, OrderStatus } from '../orders/entities/order.entity';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class PaymentsService {
@@ -17,6 +18,7 @@ export class PaymentsService {
     private readonly config: ConfigService,
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
+    private readonly notificationsService: NotificationsService,
   ) {
     this.mpClient = new MercadopagoConfig({
       accessToken: this.config.get<string>('MP_ACCESS_TOKEN')!,
@@ -102,5 +104,16 @@ export class PaymentsService {
     order.status = OrderStatus.PAID;
     order.mp_payment_id = String(paymentId);
     await this.orderRepository.save(order);
+
+    // Obtenemos el email del usuario
+    const orderWithUser = await this.orderRepository.findOne({
+      where: { id: order.id },
+      relations: ['user', 'items'],
+    });
+
+    await this.notificationsService.sendPaymentConfirmation(
+      orderWithUser!,
+      orderWithUser!.user.email,
+    );
   }
 }

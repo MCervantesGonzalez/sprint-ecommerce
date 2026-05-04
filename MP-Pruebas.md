@@ -1,5 +1,19 @@
 # Datos de Tarjetas y Estados de Pago
 
+## Usuarios de Prueba
+
+User ID:
+3336716316
+
+Usuario:
+TESTUSER6442680982673525874
+
+Contraseña:
+tH4PwZixvd
+
+Código de verificación:
+716316
+
 ## Tarjetas de Prueba
 
 | Tipo de tarjeta    | Bandera          | Número              | CVV  | Fecha de caducidad |
