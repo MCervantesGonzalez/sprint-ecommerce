@@ -22,7 +22,7 @@ Los clientes eligen un diseño del catálogo y lo aplican al producto de su elec
 - [x] Gestión de productos con variantes (talla, color, stock)
 - [x] Catálogo de diseños con imágenes (Cloudinary)
 - [x] Asignación de diseños a productos con precio extra
-- [ ] Documentación Swagger
+- [x] Documentación Swagger
 
 ### Fase 2 — Flujo de compra ⬜
 
@@ -34,7 +34,7 @@ Los clientes eligen un diseño del catálogo y lo aplican al producto de su elec
 
 ### Fase 3 — Operación ⬜
 
-- [ ] Notificaciones por email al confirmar orden
+- [x] Notificaciones por email al confirmar orden
 - [ ] Panel Admin con reportes de ventas
 - [ ] Exportación de órdenes
 - [ ] Gestión de stock desde Admin
