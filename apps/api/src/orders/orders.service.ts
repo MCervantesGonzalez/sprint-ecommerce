@@ -13,6 +13,7 @@ import { ProductVariant } from 'src/products/entities/product-variant.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { Role } from 'src/common/enums/role.enum';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class OrdersService {
@@ -24,6 +25,7 @@ export class OrdersService {
     @InjectRepository(ProductVariant)
     private readonly variantRepository: Repository<ProductVariant>,
     private readonly cartService: CartService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   // ADMIN
@@ -144,6 +146,19 @@ export class OrdersService {
 
     // 7. Vaciamos el carrito
     await this.cartService.clearCart(userId);
+
+    // 7.1. Notificacion de orden
+    const fullOrder = await this.orderRepository.findOne({
+      where: { id: savedOrder.id },
+      relations: ['items', 'user'],
+    });
+
+    await this.notificationsService.sendOrderConfirmation(
+      fullOrder!,
+      fullOrder!.user.email,
+    );
+
+    return fullOrder!;
 
     // 8. Retornamos la orden completa
     return this.orderRepository.findOne({
