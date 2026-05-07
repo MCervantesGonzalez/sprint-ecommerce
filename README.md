@@ -10,6 +10,6 @@ Los clientes eligen un diseño del catálogo y lo aplican al producto de su elec
 | App             | Stack                            | Documentación                    |
 | --------------- | -------------------------------- | -------------------------------- |
 | **Backend API** | NestJS · TypeScript · PostgreSQL | [Ver docs](./apps/api/README.md) |
-| **Frontend**    | Next.js · Tailwind · shadcn/ui   | Próximamente                     |
+| **Frontend**    | Next.js · Tailwind · shadcn/ui   | [Ver docs](./apps/web/README.md) |
 
 ## Estructura del proyecto
