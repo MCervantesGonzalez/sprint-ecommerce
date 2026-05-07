@@ -35,9 +35,10 @@ Los clientes eligen un diseño del catálogo y lo aplican al producto de su elec
 ### Fase 3 — Operación ⬜
 
 - [x] Notificaciones por email al confirmar orden
-- [ ] Panel Admin con reportes de ventas
-- [ ] Exportación de órdenes
-- [ ] Gestión de stock desde Admin
+- [x] Notificaciones por email al confirmar pago
+- [x] Panel Admin con dashboard y reportes
+- [x] Exportación de órdenes a CSV
+- [x] Gestión de stock desde Admin
 
 ## Estructura del proyecto
 
@@ -114,6 +115,16 @@ MP_WEBHOOK_SECRET=
 
 # Frontend URL (CORS)
 FRONTEND_URL=http://localhost:3001
+
+# Backend URL (para webhook de MercadoPago, Ngrok)
+BACKEND_URL=http://localhost:3000
+
+# Email (Nodemailer/Gmail)
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USER=
+MAIL_PASS=
+MAIL_FROM=
 ```
 
 ## Documentación de la API
@@ -142,6 +153,12 @@ Backend actualiza orden → PAID
 Email de confirmación al cliente
 ```
 
+## Notas de desarrollo
+
+```
+- En desarrollo se usa `synchronize: true` — TypeORM sincroniza las entidades automáticamente
+- En producción se generará la migración inicial con TypeORM CLI antes del deploy
+```
 ## Autor
 
 **Miguel Angel Cervantes González**
