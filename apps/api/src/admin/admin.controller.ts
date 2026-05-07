@@ -1,9 +1,10 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards, Res } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiTags,
   ApiQuery,
+  ApiResponse,
 } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -12,6 +13,8 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/enums/role.enum';
 import { AdminOrdersQueryDto, LowStockQueryDto } from './dto/admin-query.dto';
 import { OrderStatus } from 'src/orders/entities/order.entity';
+import type { Response } from 'express';
+import { ExportOrdersQueryDto } from './dto/admin-query.dto';
 
 @ApiTags('Admin')
 @ApiBearerAuth()
@@ -50,5 +53,34 @@ export class AdminController {
   })
   getLowStockProducts(@Query() query: LowStockQueryDto) {
     return this.adminService.getLowStockProducts(query);
+  }
+
+  @Get('orders/export')
+  @ApiOperation({ summary: 'Exportar órdenes a CSV' })
+  @ApiQuery({ name: 'status', required: false, enum: OrderStatus })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    type: String,
+    example: '2026-01-01',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    type: String,
+    example: '2026-04-30',
+  })
+  @ApiResponse({ status: 200, description: 'Archivo CSV descargable' })
+  async exportOrders(
+    @Query() query: ExportOrdersQueryDto,
+    @Res() res: Response,
+  ) {
+    const csv = await this.adminService.exportOrdersCsv(query);
+
+    const filename = `orders-${new Date().toISOString().split('T')[0]}.csv`;
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(csv);
   }
 }

@@ -1,4 +1,11 @@
-import { IsOptional, IsEnum, IsInt, Min, Max } from 'class-validator';
+import {
+  IsOptional,
+  IsEnum,
+  IsInt,
+  Min,
+  Max,
+  IsDateString,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { OrderStatus } from 'src/orders/entities/order.entity';
@@ -32,4 +39,21 @@ export class LowStockQueryDto {
   @IsInt()
   @Min(0)
   threshold?: number = 5;
+}
+
+export class ExportOrdersQueryDto {
+  @ApiPropertyOptional({ enum: OrderStatus })
+  @IsOptional()
+  @IsEnum(OrderStatus)
+  status?: OrderStatus;
+
+  @ApiPropertyOptional({ example: '2026-01-01' })
+  @IsOptional()
+  @IsDateString()
+  startDate?: string;
+
+  @ApiPropertyOptional({ example: '2026-04-30' })
+  @IsOptional()
+  @IsDateString()
+  endDate?: string;
 }
