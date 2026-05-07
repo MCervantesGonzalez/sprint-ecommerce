@@ -4,7 +4,11 @@ import { Repository, LessThanOrEqual } from 'typeorm';
 import { Order } from '../orders/entities/order.entity';
 import { ProductVariant } from '../products/entities/product-variant.entity';
 import { OrderStatus } from '../orders/entities/order.entity';
-import { AdminOrdersQueryDto, LowStockQueryDto } from './dto/admin-query.dto';
+import {
+  AdminOrdersQueryDto,
+  ExportOrdersQueryDto,
+  LowStockQueryDto,
+} from './dto/admin-query.dto';
 
 @Injectable()
 export class AdminService {
@@ -143,5 +147,65 @@ export class AdminService {
       total: variants.length,
       data: variants,
     };
+  }
+
+  // ─── CSV ───────────────────────────────────────────────────────────────
+
+  async exportOrdersCsv(query: ExportOrdersQueryDto): Promise<string> {
+    const qb = this.orderRepo
+      .createQueryBuilder('order')
+      .leftJoinAndSelect('order.user', 'user')
+      .leftJoinAndSelect('order.items', 'item')
+      .orderBy('order.created_at', 'DESC');
+
+    if (query.status) {
+      qb.andWhere('order.status = :status', { status: query.status });
+    }
+
+    if (query.startDate) {
+      qb.andWhere('order.created_at >= :startDate', {
+        startDate: new Date(query.startDate),
+      });
+    }
+
+    if (query.endDate) {
+      qb.andWhere('order.created_at <= :endDate', {
+        endDate: new Date(query.endDate + 'T23:59:59'),
+      });
+    }
+
+    const orders = await qb.getMany();
+
+    // Construimos el CSV manualmente - sin dependencias extra
+
+    const headers = [
+      'ID',
+      'CLiente',
+      'Email',
+      'Status',
+      'Total',
+      'Dirección',
+      'Fecha',
+      'Items',
+    ].join(',');
+
+    const rows = orders.map((order) => {
+      const items = order.items
+        .map((i) => `${i.snapshot_name} x${i.quantity} $${i.unit_price}`)
+        .join(' | ');
+
+      return [
+        order.id,
+        `"${order.user.name}"`,
+        order.user.email,
+        order.status,
+        order.total,
+        `"${order.shipping_address}"`,
+        order.created_at.toISOString().split('T')[0],
+        `"${items}"`,
+      ].join(',');
+    });
+
+    return [headers, ...rows].join('\n');
   }
 }
