@@ -1,98 +1,170 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Sprint Ecommerce
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST para tienda online de productos personalizados (tazas, playeras, hoodies y más).
+Los clientes eligen un diseño del catálogo y lo aplican al producto de su elección.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+> Proyecto personal real — construido para digitalizar mi emprendimiento de productos personalizados.
 
-## Description
+## Stack
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=flat&logo=nestjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white)
+![TypeORM](https://img.shields.io/badge/TypeORM-FE0803?style=flat&logo=typeorm&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
+![MercadoPago](https://img.shields.io/badge/MercadoPago-00B1EA?style=flat&logo=mercadopago&logoColor=white)
 
-## Project setup
+## Features
 
-```bash
-$ npm install
+### Fase 1 — Catálogo ✅ / 🔄 / ⬜
+
+- [x] Autenticación JWT con roles (Admin, Cliente)
+- [x] Gestión de productos con variantes (talla, color, stock)
+- [x] Catálogo de diseños con imágenes (Cloudinary)
+- [x] Asignación de diseños a productos con precio extra
+- [x] Documentación Swagger
+
+### Fase 2 — Flujo de compra ⬜
+
+- [x] Carrito de compras persistente
+- [x] Gestión de órdenes con estados
+- [x] Integración con MercadoPago
+- [x] Webhook de confirmación de pago
+- [x] Actualización automática de stock
+
+### Fase 3 — Operación ✅
+
+- [x] Notificaciones por email al confirmar orden
+- [x] Notificaciones por email al confirmar pago
+- [x] Panel Admin con dashboard y reportes
+- [x] Exportación de órdenes a CSV
+- [x] Gestión de stock desde Admin
+
+## Estructura del proyecto
+
+```
+sprint-ecommerce/
+├── apps/
+│   ├── api/          ← Backend NestJS
+│   └── web/          ← Frontend Next.js (próximamente)
+├── packages/
+│   └── shared/       ← Tipos compartidos entre api y web
+├── docker-compose.yml
+├── DESIGN.md         ← Arquitectura y decisiones de diseño
+└── README.md
 ```
 
-## Compile and run the project
+## Requisitos
+
+- Node.js 20+
+- Docker y Docker Compose
+- Cuenta de MercadoPago (para pagos)
+- Cuenta de Cloudinary (para imágenes)
+
+## Instalación y uso local
 
 ```bash
-# development
-$ npm run start
+# Clonar el repositorio
+git clone https://github.com/MCervantesGonzalez/sprint-ecommerce.git
+cd sprint-ecommerce
 
-# watch mode
-$ npm run start:dev
+# Instalar dependencias
+cd apps/api
+npm install
 
-# production mode
-$ npm run start:prod
+# Configurar variables de entorno
+cp .env.example .env
+# Editar .env con tus credenciales
+
+# Levantar base de datos con Docker
+docker-compose up -d
+
+# Correr migraciones
+npm run migration:run
+
+# Iniciar en modo desarrollo
+npm run start:dev
 ```
 
-## Run tests
+## Variables de entorno
 
-```bash
-# unit tests
-$ npm run test
+```env
+# App
+PORT=3000
+NODE_ENV=development
 
-# e2e tests
-$ npm run test:e2e
+# Database
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=sprint_ecommerce
 
-# test coverage
-$ npm run test:cov
+# JWT
+JWT_SECRET=your_secret_here
+JWT_EXPIRES_IN=7d
+
+# Cloudinary
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+
+# MercadoPago
+MP_ACCESS_TOKEN=
+MP_WEBHOOK_SECRET=
+
+# Frontend URL (CORS)
+FRONTEND_URL=http://localhost:3001
+
+# Backend URL (Ngrok para webhook de MercadoPago)
+BACKEND_URL=http://localhost:3000
+
+# Email (Nodemailer/Gmail)
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USER=
+MAIL_PASS=
+MAIL_FROM=
+
 ```
 
-## Deployment
+## Documentación de la API
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Una vez corriendo, la documentación Swagger está disponible en:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+```
+http://localhost:3000/api/docs
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Flujo de pago
 
-## Resources
+```
+Cliente confirma orden
+       ↓
+Backend crea preferencia en MercadoPago
+       ↓
+Cliente es redirigido a MercadoPago
+       ↓
+Cliente paga
+       ↓
+MercadoPago llama al webhook
+       ↓
+Backend actualiza orden → PAID
+       ↓
+Email de confirmación al cliente
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+## Notas de desarrollo
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```
+- En desarrollo se usa `synchronize: true` — TypeORM sincroniza las entidades automáticamente
+- En producción se generará la migración inicial con TypeORM CLI antes del deploy
+```
 
-## Support
+## Autor
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+**Miguel Angel Cervantes González**
+Backend Developer | NestJS · TypeScript · PostgreSQL
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/miguel-cervantes-g)
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)](https://github.com/MCervantesGonzalez)
