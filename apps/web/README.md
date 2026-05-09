@@ -60,36 +60,36 @@ apps/web/
 
 ### Fase 1 — Setup y catálogo ⬜
 
-- [ ] Instalación Next.js 14 con App Router
-- [ ] Configuración Tailwind + shadcn/ui
-- [ ] Cliente HTTP hacia el backend
-- [ ] Página Home con catálogo de productos
-- [ ] Página detalle de producto con diseños disponibles
+- [x] Configuración Tailwind + shadcn/ui
+- [x] Cliente HTTP hacia el backend
+- [x] Instalación Next.js 14 con App Router
+- [x] Página Home con catálogo de productos
+- [x] Página detalle de producto con diseños disponibles
 
 ### Fase 2 — Autenticación ⬜
 
-- [ ] Página Login
-- [ ] Página Register
-- [ ] Zustand store para auth (token, usuario)
-- [ ] Middleware de protección de rutas
-- [ ] Redirección por rol (ADMIN/CLIENT)
+- [x] Página Login
+- [x] Página Register
+- [x] Zustand store para auth (token, usuario)
+- [x] Middleware de protección de rutas
+- [x] Redirección por rol (ADMIN/CLIENT)
 
 ### Fase 3 — Flujo de compra ⬜
 
-- [ ] Carrito con drawer lateral
-- [ ] Zustand store para carrito
-- [ ] Página checkout
-- [ ] Integración con MercadoPago (redirect)
-- [ ] Página mis órdenes
-- [ ] Página detalle de orden
+- [x] Carrito con drawer lateral
+- [x] Zustand store para carrito
+- [x] Página checkout
+- [x] Integración con MercadoPago (redirect)
+- [x] Página mis órdenes
+- [x] Página detalle de orden
 
 ### Fase 4 — Panel Admin ⬜
 
-- [ ] Dashboard con métricas
-- [ ] Gestión de productos y variantes
-- [ ] Gestión de diseños con upload de imagen
-- [ ] Gestión de órdenes con cambio de status
-- [ ] Exportación de órdenes CSV
+- [x] Dashboard con métricas
+- [x] Gestión de productos y variantes
+- [x] Gestión de diseños con upload de imagen
+- [x] Gestión de órdenes con cambio de status
+- [x] Exportación de órdenes CSV
 
 ## Variables de entorno
 
