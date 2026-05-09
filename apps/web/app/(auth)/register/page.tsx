@@ -48,7 +48,9 @@ export default function RegisterPage() {
       const response = await api.post("/auth/register", data);
       const { access_token, user } = response.data;
       login(access_token, user);
-      router.push("/");
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      window.location.href = "/";
     } catch (err: any) {
       setError(err.response?.data?.message || "Error al registrarse");
     }

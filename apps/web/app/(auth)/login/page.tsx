@@ -47,11 +47,14 @@ export default function LoginPage() {
       const { access_token, user } = response.data;
       login(access_token, user);
 
-      // Redirigir según rol
+      // Esperar un tick para que la cookie se escriba
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Forzar reload completo para que el middleware lea la cookie
       if (user.role === "ADMIN") {
-        router.push("/admin/dashboard");
+        window.location.href = "/admin/dashboard";
       } else {
-        router.push("/");
+        window.location.href = "/";
       }
     } catch (err: any) {
       setError(err.response?.data?.message || "Credenciales inválidas");
