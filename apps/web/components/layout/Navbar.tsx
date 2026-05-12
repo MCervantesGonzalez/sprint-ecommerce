@@ -15,7 +15,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useCartStore } from "@/store/cartStore";
 import { useCart } from "@/hooks/useCart";
 import { useTheme } from "next-themes";
-import { LogoNavbar } from "@/components/layout/LogoNavbar";
+import { LogoNavbar } from "@/components/layout/icons/brands/NavbarLogo";
 
 function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
