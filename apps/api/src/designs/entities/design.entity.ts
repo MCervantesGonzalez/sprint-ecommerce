@@ -6,30 +6,38 @@ import {
   OneToMany,
 } from 'typeorm';
 import { ProductDesign } from './product-design.entity';
+import { DesignCategory } from 'src/common/enums/design-category.enum';
 
 @Entity('designs')
 export class Design {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column()
-  name: string;
+  name!: string;
+
+  @Column({
+    type: 'enum',
+    enum: DesignCategory,
+    default: DesignCategory.OTRO,
+  })
+  category!: DesignCategory;
 
   @Column({ nullable: true })
-  description: string;
+  description!: string;
 
   @Column()
-  image_url: string;
+  image_url!: string;
 
   @Column({ nullable: true })
-  public_id: string;
+  public_id!: string;
 
   @Column({ default: true })
-  active: boolean;
+  active!: boolean;
 
   @CreateDateColumn()
-  created_at: Date;
+  created_at!: Date;
 
   @OneToMany(() => ProductDesign, (pd) => pd.design)
-  productDesigns: ProductDesign[];
+  productDesigns!: ProductDesign[];
 }

@@ -29,6 +29,7 @@ export interface Design {
   name: string;
   description: string;
   image_url: string;
+  category: string;
   active: boolean;
 }
 
