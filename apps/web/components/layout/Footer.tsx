@@ -85,7 +85,7 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/faq"
+                  href="/contact"
                   className="text-sm text-muted-foreground hover:text-foreground"
                 >
                   Contacto
@@ -93,7 +93,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/shipping"
+                  href="/faq"
                   className="text-sm text-muted-foreground hover:text-foreground"
                 >
                   Preguntas Frecuentes
@@ -101,7 +101,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/contact"
+                  href="/shipping"
                   className="text-sm text-muted-foreground hover:text-foreground"
                 >
                   Envíos y Devoluciones
