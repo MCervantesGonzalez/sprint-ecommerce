@@ -161,6 +161,12 @@ export class AdminService {
     return this.designRepository.save(design);
   }
 
+  async getAllDesigns() {
+    return this.designRepository.find({
+      order: { created_at: 'DESC' },
+    });
+  }
+
   // ─── Low Stock ────────────────────────────────────────────────────────────
 
   async getLowStockProducts(query: LowStockQueryDto) {
