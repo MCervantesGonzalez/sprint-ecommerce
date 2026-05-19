@@ -3,10 +3,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
 import { Order } from '../orders/entities/order.entity';
+import { Product } from 'src/products/entities/product.entity';
 import { ProductVariant } from '../products/entities/product-variant.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Order, ProductVariant])],
+  imports: [TypeOrmModule.forFeature([Order, Product, ProductVariant])],
   controllers: [AdminController],
   providers: [AdminService],
 })

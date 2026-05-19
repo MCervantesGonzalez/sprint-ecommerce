@@ -15,7 +15,7 @@ export function LogoSprint(props: Props) {
       <path
         d="M356.92.02v63.17l-59.54,46.16h-48.6v60.75h-59.53V.02h167.67ZM297.38,46.18h-48.6v17.01h48.6v-17.01Z"
         fill="#e42b2a"
-        stroke-width="0"
+        strokeWidth="0"
       />
       <path
         d="M546.16,59.55l-30.62,25.5h30.62v85.05h-59.53v-60.75h-48.6v60.75h-59.54V0h167.67v59.55ZM486.63,46.18h-48.6v17.01h48.6v-17.01Z"
