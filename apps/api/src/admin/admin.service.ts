@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThanOrEqual } from 'typeorm';
 import { Order } from '../orders/entities/order.entity';
@@ -106,6 +106,15 @@ export class AdminService {
       relations: ['variants'],
       order: { created_at: 'DESC' },
     });
+  }
+
+  async updateProduct(id: string, data: Partial<Product>): Promise<Product> {
+    const product = await this.productRepository.findOne({
+      where: { id },
+    });
+    if (!product) throw new NotFoundException('Producto no encontrado');
+    Object.assign(product, data);
+    return this.productRepository.save(product);
   }
 
   // ─── Orders ───────────────────────────────────────────────────────────────
