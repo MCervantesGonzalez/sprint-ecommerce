@@ -63,6 +63,13 @@ export class AdminController {
   }
 
   @Roles(Role.ADMIN)
+  @Patch('designs/:id')
+  @ApiOperation({ summary: 'Actualizar diseño incluyendo inactivos (ADMIN)' })
+  updateDesign(@Param('id') id: string, @Body() body: any) {
+    return this.adminService.updateDesign(id, body);
+  }
+
+  @Roles(Role.ADMIN)
   @Patch('products/:id')
   @ApiOperation({ summary: 'Actualizar producto incluyendo inactivos (ADMIN)' })
   updateProduct(@Param('id') id: string, @Body() body: any) {

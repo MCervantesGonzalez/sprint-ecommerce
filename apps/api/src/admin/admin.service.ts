@@ -10,6 +10,7 @@ import {
   LowStockQueryDto,
 } from './dto/admin-query.dto';
 import { Product } from 'src/products/entities/product.entity';
+import { Design } from 'src/designs/entities/design.entity';
 
 @Injectable()
 export class AdminService {
@@ -18,6 +19,8 @@ export class AdminService {
     private readonly orderRepo: Repository<Order>,
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    @InjectRepository(Design)
+    private readonly designRepository: Repository<Design>,
     @InjectRepository(ProductVariant)
     private readonly variantRepo: Repository<ProductVariant>,
   ) {}
@@ -99,7 +102,7 @@ export class AdminService {
     });
   }
 
-  // Products
+  // ─── Products ───────────────────────────────────────────────────────────────
 
   async getAllProducts() {
     return this.productRepository.find({
@@ -147,6 +150,15 @@ export class AdminService {
         totalPages: Math.ceil(total / limit),
       },
     };
+  }
+
+  // ─── Designs ───────────────────────────────────────────────────────────────
+
+  async updateDesign(id: string, data: Partial<Design>): Promise<Design> {
+    const design = await this.designRepository.findOne({ where: { id } });
+    if (!design) throw new NotFoundException('Diseño no encontrado');
+    Object.assign(design, data);
+    return this.designRepository.save(design);
   }
 
   // ─── Low Stock ────────────────────────────────────────────────────────────
