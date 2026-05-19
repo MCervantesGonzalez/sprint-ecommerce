@@ -125,7 +125,7 @@ export function Footer() {
                 <span className="text-xs font-bold">SPRINT QUALITY</span>
               </div>
             </div>
-            <p className="text-sm" text-muted-foreground>
+            <p className="text-sm text-muted-foreground">
               Procesamos tus pagos de forma segura a través de{" "}
               <strong>Mercado Pago</strong>.
             </p>

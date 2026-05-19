@@ -43,6 +43,16 @@ export class AdminController {
     return this.adminService.getOrders(query);
   }
 
+  @Roles(Role.ADMIN)
+  @Get('products')
+  @ApiOperation({
+    summary: 'Listar todos los productos incluyendo inactivos (ADMIN)',
+  })
+  @ApiResponse({ status: 200, description: 'Lista completa de productos' })
+  getAllProducts() {
+    return this.adminService.getAllProducts();
+  }
+
   @Get('products/low-stock')
   @ApiOperation({ summary: 'Variantes con stock bajo o igual al umbral' })
   @ApiQuery({

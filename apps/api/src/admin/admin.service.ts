@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThanOrEqual } from 'typeorm';
 import { Order } from '../orders/entities/order.entity';
@@ -9,12 +9,15 @@ import {
   ExportOrdersQueryDto,
   LowStockQueryDto,
 } from './dto/admin-query.dto';
+import { Product } from 'src/products/entities/product.entity';
 
 @Injectable()
 export class AdminService {
   constructor(
     @InjectRepository(Order)
     private readonly orderRepo: Repository<Order>,
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
     @InjectRepository(ProductVariant)
     private readonly variantRepo: Repository<ProductVariant>,
   ) {}
@@ -93,6 +96,15 @@ export class AdminService {
         created_at: true,
         user: { id: true, name: true, email: true },
       },
+    });
+  }
+
+  // Products
+
+  async getAllProducts() {
+    return this.productRepository.find({
+      relations: ['variants'],
+      order: { created_at: 'DESC' },
     });
   }
 
