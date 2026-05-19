@@ -1,4 +1,13 @@
-import { Controller, Get, Query, UseGuards, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  UseGuards,
+  Res,
+  Patch,
+  Param,
+  Body,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -51,6 +60,13 @@ export class AdminController {
   @ApiResponse({ status: 200, description: 'Lista completa de productos' })
   getAllProducts() {
     return this.adminService.getAllProducts();
+  }
+
+  @Roles(Role.ADMIN)
+  @Patch('products/:id')
+  @ApiOperation({ summary: 'Actualizar producto incluyendo inactivos (ADMIN)' })
+  updateProduct(@Param('id') id: string, @Body() body: any) {
+    return this.adminService.updateProduct(id, body);
   }
 
   @Get('products/low-stock')
