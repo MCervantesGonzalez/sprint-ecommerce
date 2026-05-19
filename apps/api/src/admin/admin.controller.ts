@@ -63,6 +63,16 @@ export class AdminController {
   }
 
   @Roles(Role.ADMIN)
+  @Get('designs')
+  @ApiOperation({
+    summary: 'Listar todos los diseños incluyendo inactivos (ADMIN)',
+  })
+  @ApiResponse({ status: 200, description: 'Lista completa de diseños' })
+  getAllDesigns() {
+    return this.adminService.getAllDesigns();
+  }
+
+  @Roles(Role.ADMIN)
   @Patch('designs/:id')
   @ApiOperation({ summary: 'Actualizar diseño incluyendo inactivos (ADMIN)' })
   updateDesign(@Param('id') id: string, @Body() body: any) {
