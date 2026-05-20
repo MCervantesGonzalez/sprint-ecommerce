@@ -5,31 +5,31 @@ import {
   CreateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { Category } from 'src/common/enums/category.enum';
+import { Category } from '../../common/enums/category.enum';
 import { ProductVariant } from './product-variant.entity';
 
 @Entity('products')
 export class Product {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column()
-  name: string;
+  name!: string;
 
   @Column({ type: 'enum', enum: Category })
-  category: Category;
+  category!: Category;
 
   @Column({ nullable: true })
-  description: string;
+  description!: string;
 
   @Column({ default: true })
-  active: boolean;
+  active!: boolean;
 
   @CreateDateColumn()
-  created_at: Date;
+  created_at!: Date;
 
   @OneToMany(() => ProductVariant, (variant) => variant.product, {
     cascade: true,
   })
-  variants: ProductVariant[];
+  variants!: ProductVariant[];
 }

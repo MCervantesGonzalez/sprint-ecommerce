@@ -13,6 +13,16 @@ export function useAdminDashboard() {
   });
 }
 
+export function useAdminProducts() {
+  return useQuery({
+    queryKey: ["admin", "products"],
+    queryFn: async () => {
+      const { data } = await api.get("/admin/products");
+      return data;
+    },
+  });
+}
+
 export function useAdminOrders(status?: string, page = 1, limit = 20) {
   return useQuery({
     queryKey: ["admin", "orders", status, page],
@@ -93,10 +103,11 @@ export function useUpdateProduct() {
         active?: boolean;
       };
     }) => {
-      const { data: res } = await api.patch(`/products/${id}`, data);
+      const { data: res } = await api.patch(`/admin/products/${id}`, data);
       return res;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
       queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
@@ -139,6 +150,7 @@ export function useCreateVariant() {
       return res;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
       queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
@@ -169,6 +181,7 @@ export function useUpdateVariant() {
       return res;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
       queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
@@ -207,28 +220,64 @@ export function useCreateDesign() {
       return data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "designs"] });
       queryClient.invalidateQueries({ queryKey: ["designs"] });
     },
   });
 }
 
+// export function useUpdateDesign() {
+//   const queryClient = useQueryClient();
+//   return useMutation({
+//     mutationFn: async ({
+//       id,
+//       formData,
+//     }: {
+//       id: string;
+//       formData: FormData;
+//     }) => {
+//       const { data } = await api.patch(`/admin/designs/${id}`, formData, {
+//         headers: { "Content-Type": "multipart/form-data" },
+//       });
+//       return data;
+//     },
+//     onSuccess: () => {
+//       queryClient.invalidateQueries({ queryKey: ["admin", "designs"] });
+//       queryClient.invalidateQueries({ queryKey: ["designs"] });
+//     },
+//   });
+// }
+
 export function useUpdateDesign() {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async ({
       id,
-      formData,
+      data,
+      isFormData = false,
     }: {
       id: string;
-      formData: FormData;
+      data: FormData | Record<string, unknown>;
+      isFormData?: boolean;
     }) => {
-      const { data } = await api.patch(`/designs/${id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      return data;
+      const response = await api.patch(`/admin/designs/${id}`, data);
+      return response.data;
     },
+
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "designs"] });
       queryClient.invalidateQueries({ queryKey: ["designs"] });
+    },
+  });
+}
+
+export function useAdminDesigns() {
+  return useQuery({
+    queryKey: ["admin", "designs"],
+    queryFn: async () => {
+      const { data } = await api.get("/admin/designs");
+      return data;
     },
   });
 }

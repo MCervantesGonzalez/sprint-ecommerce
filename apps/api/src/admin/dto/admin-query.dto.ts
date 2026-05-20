@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { OrderStatus } from 'src/orders/entities/order.entity';
+import { OrderStatus } from '../../orders/entities/order.entity';
 
 export class AdminOrdersQueryDto {
   @ApiPropertyOptional({ enum: OrderStatus })

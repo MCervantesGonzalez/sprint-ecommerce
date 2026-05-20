@@ -43,28 +43,37 @@ const faqs = [
 
 export default function FaqPage() {
   return (
-    <div className="max-w-3xl mx-auto space-y-8 py-8">
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold tracking-tight">
+    <div className="max-w-3xl mx-auto space-y-4 sm:space-y-8 py-4 sm:py-8 px-3 sm:px-6">
+      <div className="text-center space-y-2 sm:space-y-4">
+        <h1 className="text-2xl sm:text-4xl font-bold tracking-tight">
           Preguntas Frecuentes
         </h1>
-        <p className="text-muted-foreground text-lg">
+        <p className="text-sm sm:text-lg text-muted-foreground">
           Resolvemos tus dudas más comunes
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-2 sm:space-y-4">
         {faqs.map((faq, index) => (
-          <div key={index} className="border rounded-xl p-6 space-y-2">
-            <h3 className="font-semibold">{faq.question}</h3>
-            <p className="text-sm text-muted-foreground">{faq.answer}</p>
+          <div
+            key={index}
+            className="border rounded-lg sm:rounded-xl p-3 sm:p-6 space-y-1 sm:space-y-2"
+          >
+            <h3 className="font-semibold text-sm sm:text-base">
+              {faq.question}
+            </h3>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              {faq.answer}
+            </p>
           </div>
         ))}
       </div>
 
-      <div className="text-center p-6 bg-muted/30 rounded-xl space-y-2">
-        <p className="font-medium">¿No encontraste tu respuesta?</p>
-        <p className="text-sm text-muted-foreground">
+      <div className="text-center p-4 sm:p-6 bg-muted/30 rounded-lg sm:rounded-xl space-y-1 sm:space-y-2">
+        <p className="font-medium text-sm sm:text-base">
+          ¿No encontraste tu respuesta?
+        </p>
+        <p className="text-xs sm:text-sm text-muted-foreground">
           Contáctanos directamente y te ayudamos.
         </p>
       </div>

@@ -57,37 +57,49 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Crear cuenta</CardTitle>
-          <CardDescription>
+    <div className="min-h-[80vh] flex items-center justify-center p-3 sm:p-6">
+      <Card className="w-full max-w-md border-0 sm:border">
+        <CardHeader className="space-y-1 px-4 sm:px-6 pt-6 sm:pt-8">
+          <CardTitle className="text-xl sm:text-2xl font-bold">
+            Crear cuenta
+          </CardTitle>
+          <CardDescription className="text-sm sm:text-base">
             Completa el formulario para registrarte
           </CardDescription>
         </CardHeader>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 sm:space-y-4 px-4 sm:px-6">
             {error && (
-              <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md">
+              <div className="p-2 sm:p-3 text-xs sm:text-sm text-red-600 bg-red-50 rounded-md border border-red-200">
                 {error}
               </div>
             )}
 
-            <div className="space-y-2">
-              <Label htmlFor="name">Nombre completo</Label>
-              <Input id="name" placeholder="Juan Pérez" {...register("name")} />
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="name" className="text-sm sm:text-base">
+                Nombre completo
+              </Label>
+              <Input
+                id="name"
+                placeholder="Juan Pérez"
+                className="text-sm sm:text-base h-9 sm:h-10"
+                {...register("name")}
+              />
               {errors.name && (
                 <p className="text-xs text-red-500">{errors.name.message}</p>
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="email" className="text-sm sm:text-base">
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="juan@example.com"
+                className="text-sm sm:text-base h-9 sm:h-10"
                 {...register("email")}
               />
               {errors.email && (
@@ -95,12 +107,15 @@ export default function RegisterPage() {
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Contraseña</Label>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="password" className="text-sm sm:text-base">
+                Contraseña
+              </Label>
               <Input
                 id="password"
                 type="password"
                 placeholder="••••••••"
+                className="text-sm sm:text-base h-9 sm:h-10"
                 {...register("password")}
               />
               {errors.password && (
@@ -110,23 +125,33 @@ export default function RegisterPage() {
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="phone">Teléfono (opcional)</Label>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="phone" className="text-sm sm:text-base">
+                Teléfono (opcional)
+              </Label>
               <Input
                 id="phone"
                 placeholder="3311223344"
+                className="text-sm sm:text-base h-9 sm:h-10"
                 {...register("phone")}
               />
             </div>
           </CardContent>
 
-          <CardFooter className="flex flex-col space-y-3">
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
+          <CardFooter className="flex flex-col space-y-3 px-4 sm:px-6 pb-6 sm:pb-8">
+            <Button
+              type="submit"
+              className="w-full text-sm sm:text-base h-9 sm:h-10"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? "Creando cuenta..." : "Crear cuenta"}
             </Button>
-            <p className="text-sm text-muted-foreground text-center">
+            <p className="text-xs sm:text-sm text-muted-foreground text-center">
               ¿Ya tienes cuenta?{" "}
-              <Link href="/login" className="text-primary hover:underline">
+              <Link
+                href="/login"
+                className="text-primary hover:underline font-medium"
+              >
                 Inicia sesión
               </Link>
             </p>

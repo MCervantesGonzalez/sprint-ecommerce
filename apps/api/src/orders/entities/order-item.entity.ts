@@ -6,8 +6,8 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Order } from './order.entity';
-import { ProductVariant } from 'src/products/entities/product-variant.entity';
-import { Design } from 'src/designs/entities/design.entity';
+import { ProductVariant } from '../../products/entities/product-variant.entity';
+import { Design } from '../../designs/entities/design.entity';
 
 @Entity('order_items')
 export class OrderItem {

@@ -16,14 +16,17 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { Role } from 'src/common/enums/role.enum';
-import { AdminOrdersQueryDto, LowStockQueryDto } from './dto/admin-query.dto';
-import { OrderStatus } from 'src/orders/entities/order.entity';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
+import { Role } from '../common/enums/role.enum';
+import {
+  AdminOrdersQueryDto,
+  LowStockQueryDto,
+  ExportOrdersQueryDto,
+} from './dto/admin-query.dto';
+import { OrderStatus } from '../orders/entities/order.entity';
 import type { Response } from 'express';
-import { ExportOrdersQueryDto } from './dto/admin-query.dto';
 
 @ApiTags('Admin')
 @ApiBearerAuth()
