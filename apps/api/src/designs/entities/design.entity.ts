@@ -6,7 +6,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { ProductDesign } from './product-design.entity';
-import { DesignCategory } from 'src/common/enums/design-category.enum';
+import { DesignCategory } from '../../common/enums/design-category.enum';
 
 @Entity('designs')
 export class Design {

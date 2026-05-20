@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ShoppingBag, Package, BarChart3 } from "lucide-react";
+import {
+  LayoutDashboard,
+  ShoppingBag,
+  Package,
+  BarChart3,
+  Palette,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -25,6 +31,11 @@ const navItems = [
     href: "/admin/low-stock",
     label: "Stock bajo",
     icon: BarChart3,
+  },
+  {
+    href: "/admin/designs",
+    label: "Diseños",
+    icon: Palette,
   },
 ];
 

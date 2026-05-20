@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
-import { Order } from 'src/orders/entities/order.entity';
+import { Order } from '../orders/entities/order.entity';
 
 @Injectable()
 export class NotificationsService {

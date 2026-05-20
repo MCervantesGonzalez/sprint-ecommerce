@@ -7,7 +7,7 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
-import { User } from 'src/users/user.entity';
+import { User } from '../../users/user.entity';
 import { OrderItem } from './order-item.entity';
 
 export enum OrderStatus {

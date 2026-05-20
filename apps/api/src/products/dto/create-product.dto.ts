@@ -1,6 +1,6 @@
 import { IsString, IsEnum, IsOptional, IsBoolean } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Category } from 'src/common/enums/category.enum';
+import { Category } from '../../common/enums/category.enum';
 
 export class CreateProductDto {
   @ApiProperty({ example: 'Taza Clásica' })

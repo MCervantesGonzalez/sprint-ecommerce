@@ -26,10 +26,10 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Card className="flex flex-col hover:shadow-lg transition-shadow">
-      <CardContent className="pt-6 flex-1">
+      <CardContent className="pt-4 sm:pt-6 flex-1">
         {/* Imagen placeholder */}
-        <div className="w-full h-48 bg-gray-100 rounded-md flex items-center justify-center mb-4">
-          <span className="text-4xl">
+        <div className="w-full h-32 sm:h-40 md:h-48 bg-gray-100 rounded-md flex items-center justify-center mb-3 sm:mb-4">
+          <span className="text-2xl sm:text-3xl md:text-4xl">
             {product.category === "TAZA"
               ? "☕"
               : product.category === "PLAYERA"
@@ -40,21 +40,23 @@ export function ProductCard({ product }: ProductCardProps) {
           </span>
         </div>
 
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-lg">{product.name}</h3>
+        <div className="space-y-1 sm:space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="font-semibold text-sm sm:text-base md:text-lg line-clamp-2">
+              {product.name}
+            </h3>
             <Badge className={categoryColors[product.category]}>
               {product.category}
             </Badge>
           </div>
 
           {product.description && (
-            <p className="text-sm text-muted-foreground line-clamp-2">
+            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
               {product.description}
             </p>
           )}
 
-          <p className="text-lg font-bold text-primary">
+          <p className="text-base sm:text-lg font-bold text-primary">
             Desde ${minPrice.toFixed(2)}
           </p>
 

@@ -8,12 +8,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order, OrderStatus } from './entities/order.entity';
 import { OrderItem } from './entities/order-item.entity';
-import { CartService } from 'src/cart/cart.service';
-import { ProductVariant } from 'src/products/entities/product-variant.entity';
+import { CartService } from '../cart/cart.service';
+import { ProductVariant } from '../products/entities/product-variant.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
-import { Role } from 'src/common/enums/role.enum';
-import { NotificationsService } from 'src/notifications/notifications.service';
+import { Role } from '../common/enums/role.enum';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class OrdersService {

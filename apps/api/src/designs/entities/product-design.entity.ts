@@ -5,23 +5,23 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Product } from 'src/products/entities/product.entity';
+import { Product } from '../../products/entities/product.entity';
 import { Design } from './design.entity';
 
 @Entity('product_designs')
 export class ProductDesign {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @ManyToOne(() => Product, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'product_id' })
-  product: Product;
+  product!: Product;
 
   @ManyToOne(() => Design, (design) => design.productDesigns, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'design_id' })
-  design: Design;
+  design!: Design;
 
   @Column({
     type: 'decimal',
@@ -33,5 +33,5 @@ export class ProductDesign {
       from: (value: string) => parseFloat(value),
     },
   })
-  extra_price: number;
+  extra_price!: number;
 }

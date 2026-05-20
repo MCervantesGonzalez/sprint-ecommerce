@@ -17,8 +17,8 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import { PaymentsService } from './payments.service';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { Public } from 'src/common/decorators/public.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Public } from '../common/decorators/public.decorator';
 
 @ApiTags('Payments')
 @ApiBearerAuth()

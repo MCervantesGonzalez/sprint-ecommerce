@@ -10,22 +10,22 @@ import { Product } from './product.entity';
 @Entity('product_variants')
 export class ProductVariant {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @ManyToOne(() => Product, (product) => product.variants, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'product_id' })
-  product: Product;
+  product!: Product;
 
   @Column()
-  size: string;
+  size!: string;
 
   @Column()
-  color: string;
+  color!: string;
 
   @Column({ default: 0 })
-  stock: number;
+  stock!: number;
 
   @Column({
     type: 'decimal',
@@ -36,8 +36,8 @@ export class ProductVariant {
       from: (value: string) => parseFloat(value),
     },
   })
-  base_price: number;
+  base_price!: number;
 
   @Column({ default: true })
-  active: boolean;
+  active!: boolean;
 }

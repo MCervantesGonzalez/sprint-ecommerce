@@ -71,7 +71,7 @@ export default function CheckoutPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-4xl mx-auto space-y-4">
+      <div className="max-w-4xl mx-auto space-y-4 p-3 sm:p-6">
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-64 w-full" />
       </div>
@@ -84,27 +84,35 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <h1 className="text-3xl font-bold">Checkout</h1>
+    <div className="max-w-4xl mx-auto space-y-4 sm:space-y-8 p-3 sm:p-6">
+      <h1 className="text-2xl sm:text-3xl font-bold">Checkout</h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
         {/* Formulario */}
-        <div className="border rounded-xl p-6 space-y-4">
-          <h2 className="text-xl font-semibold">Dirección de envío</h2>
+        <div className="border rounded-lg sm:rounded-xl p-4 sm:p-6 space-y-3 sm:space-y-4">
+          <h2 className="text-lg sm:text-xl font-semibold">
+            Dirección de envío
+          </h2>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-3 sm:space-y-4"
+          >
             {error && (
-              <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md">
+              <div className="p-2 sm:p-3 text-xs sm:text-sm text-red-600 bg-red-50 rounded-md border border-red-200">
                 {error}
               </div>
             )}
 
             {/* Calle y número */}
-            <div className="space-y-2">
-              <Label htmlFor="street">Calle y número</Label>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="street" className="text-sm sm:text-base">
+                Calle y número
+              </Label>
               <Input
                 id="street"
                 placeholder="Ej: Av. Chapultepec 4563"
+                className="text-sm sm:text-base h-9 sm:h-10"
                 {...register("street")}
               />
               {errors.street && (
@@ -113,25 +121,31 @@ export default function CheckoutPage() {
             </div>
 
             {/* Colonia */}
-            <div className="space-y-2">
-              <Label htmlFor="neighborhood">
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="neighborhood" className="text-sm sm:text-base">
                 Colonia o barrio{" "}
-                <span className="text-muted-foreground">(opcional)</span>
+                <span className="text-muted-foreground text-xs sm:text-sm">
+                  (opcional)
+                </span>
               </Label>
               <Input
                 id="neighborhood"
                 placeholder="Ej: Col. Americana"
+                className="text-sm sm:text-base h-9 sm:h-10"
                 {...register("neighborhood")}
               />
             </div>
 
             {/* Ciudad y Estado */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="city">Ciudad</Label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="city" className="text-sm sm:text-base">
+                  Ciudad
+                </Label>
                 <Input
                   id="city"
                   placeholder="Ej: Guadalajara"
+                  className="text-sm sm:text-base h-9 sm:h-10"
                   {...register("city")}
                 />
                 {errors.city && (
@@ -139,11 +153,14 @@ export default function CheckoutPage() {
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="state">Estado</Label>
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="state" className="text-sm sm:text-base">
+                  Estado
+                </Label>
                 <Input
                   id="state"
                   placeholder="Ej: Jalisco"
+                  className="text-sm sm:text-base h-9 sm:h-10"
                   {...register("state")}
                 />
                 {errors.state && (
@@ -153,12 +170,15 @@ export default function CheckoutPage() {
             </div>
 
             {/* Código Postal */}
-            <div className="space-y-2">
-              <Label htmlFor="zip_code">Código Postal</Label>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="zip_code" className="text-sm sm:text-base">
+                Código Postal
+              </Label>
               <Input
                 id="zip_code"
                 placeholder="Ej: 44160"
                 maxLength={5}
+                className="text-sm sm:text-base h-9 sm:h-10"
                 {...register("zip_code")}
               />
               {errors.zip_code && (
@@ -170,7 +190,7 @@ export default function CheckoutPage() {
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full text-sm sm:text-base h-9 sm:h-10"
               size="lg"
               disabled={isSubmitting}
             >
@@ -180,13 +200,15 @@ export default function CheckoutPage() {
         </div>
 
         {/* Resumen */}
-        <div className="border rounded-xl p-6 space-y-4 h-fit sticky top-24">
-          <h2 className="text-xl font-semibold">Resumen del pedido</h2>
+        <div className="border rounded-lg sm:rounded-xl p-4 sm:p-6 space-y-3 sm:space-y-4 h-fit sticky top-24">
+          <h2 className="text-lg sm:text-xl font-semibold">
+            Resumen del pedido
+          </h2>
 
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             {cart.items.map((item) => (
-              <div key={item.id} className="flex gap-3">
-                <div className="h-12 w-12 rounded-md bg-gray-100 overflow-hidden flex-shrink-0">
+              <div key={item.id} className="flex gap-2 sm:gap-3">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-md bg-gray-100 overflow-hidden flex-shrink-0">
                   {item.design?.image_url ? (
                     <Image
                       src={item.design.image_url}
@@ -196,30 +218,32 @@ export default function CheckoutPage() {
                       className="object-cover w-full h-full"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-xl">
+                    <div className="w-full h-full flex items-center justify-center text-lg sm:text-xl">
                       ☕
                     </div>
                   )}
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs sm:text-sm font-medium truncate">
                     {item.variant.color} — {item.variant.size}
                   </p>
                   {item.design && (
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground truncate">
                       {item.design.name}
                     </p>
                   )}
-                  <p className="text-sm">x{item.quantity}</p>
+                  <p className="text-xs text-muted-foreground">
+                    x{item.quantity}
+                  </p>
                 </div>
-                <p className="font-medium">
+                <p className="font-medium text-xs sm:text-sm whitespace-nowrap">
                   ${(item.variant.base_price * item.quantity).toFixed(2)}
                 </p>
               </div>
             ))}
           </div>
 
-          <div className="border-t pt-4 flex justify-between font-bold text-lg">
+          <div className="border-t pt-3 sm:pt-4 flex justify-between font-bold text-base sm:text-lg">
             <span>Total</span>
             <span>${Number(cart.total).toFixed(2)}</span>
           </div>

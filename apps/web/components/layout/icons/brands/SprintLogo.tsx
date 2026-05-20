@@ -4,7 +4,7 @@ export function LogoSprint(props: Props) {
   return (
     <svg
       viewBox="0 0 1000 170.11"
-      className="h-10 w-auto hover:scale-110 transition-transform duration-150"
+      className="h-8 sm:h-10 w-auto hover:scale-110 transition-transform duration-150"
       {...props}
     >
       <path
