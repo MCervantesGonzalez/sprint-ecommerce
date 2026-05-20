@@ -1,4 +1,5 @@
 import { IsString, IsEnum, IsOptional, IsBoolean } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Category } from '../../common/enums/category.enum';
 
@@ -8,6 +9,7 @@ export class CreateProductDto {
   name!: string;
 
   @ApiProperty({ enum: Category, example: Category.TAZA })
+  @Transform(({ value }) => value?.toUpperCase())
   @IsEnum(Category)
   category!: Category;
 

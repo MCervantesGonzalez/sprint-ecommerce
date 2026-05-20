@@ -9,6 +9,10 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  ParseFilePipe,
+  FileTypeValidator,
+  MaxFileSizeValidator,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -27,6 +31,10 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Public } from '../common/decorators/public.decorator';
 import { Role } from '../common/enums/role.enum';
+import { FileInterceptor } from '@nestjs/platform-express';
+import multer from 'multer';
+import { UploadedFile, UseInterceptors } from '@nestjs/common';
+import { ApiConsumes, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('Products')
 @ApiBearerAuth()
@@ -58,17 +66,87 @@ export class ProductsController {
   @Roles(Role.ADMIN)
   @Post()
   @ApiOperation({ summary: 'Crear producto (ADMIN)' })
-  @ApiResponse({ status: 201, description: 'Producto creado' })
-  create(@Body() dto: CreateProductDto) {
-    return this.productsService.create(dto);
+  @ApiResponse({ status: 200, description: 'Producto creado' })
+  @ApiResponse({ status: 400, description: 'Imagen o datos inválidos' })
+  @UseInterceptors(
+    FileInterceptor('image', { storage: multer.memoryStorage() }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        category: {
+          type: 'string',
+          enum: ['TAZA', 'PLAYERA', 'HOODIE', 'OTRO'],
+        },
+        description: { type: 'string' },
+        image: { type: 'string', format: 'binary' },
+      },
+    },
+  })
+  create(
+    @Body() dto: CreateProductDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new FileTypeValidator({ fileType: /(jpg|jpeg|png|webp)$/i }),
+          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }),
+        ],
+        exceptionFactory: (err: any) =>
+          new BadRequestException(err?.message ?? 'Imagen inválida'),
+      }),
+    )
+    file?: Express.Multer.File,
+  ) {
+    return this.productsService.create(dto, file);
   }
 
   @Roles(Role.ADMIN)
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar producto (ADMIN)' })
   @ApiResponse({ status: 200, description: 'Producto actualizado' })
-  update(@Param('id') id: string, @Body() dto: UpdateProductDto) {
-    return this.productsService.update(id, dto);
+  @ApiResponse({ status: 400, description: 'Imagen o datos inválidos' })
+  @UseInterceptors(
+    FileInterceptor('image', { storage: multer.memoryStorage() }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        category: {
+          type: 'string',
+          enum: ['TAZA', 'PLAYERA', 'HOODIE', 'OTRO'],
+        },
+        description: { type: 'string' },
+        active: { type: 'boolean' },
+        image: {
+          type: 'string',
+          format: 'binary',
+          description: 'Solo JPG, PNG o WEBP. Tamaño máximo: 5MB',
+        },
+      },
+    },
+  })
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateProductDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new FileTypeValidator({ fileType: /(jpg|jpeg|png|webp)$/i }),
+          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }),
+        ],
+        exceptionFactory: (err: any) =>
+          new BadRequestException(err?.message ?? 'Imagen inválida'),
+      }),
+    )
+    file?: Express.Multer.File,
+  ) {
+    return this.productsService.update(id, dto, file);
   }
 
   @Roles(Role.ADMIN)

@@ -19,6 +19,8 @@ export interface Product {
   name: string;
   category: "TAZA" | "PLAYERA" | "HOODIE" | "OTRO";
   description: string;
+  image_url?: string;
+  public_id?: string;
   active: boolean;
   created_at: string;
   variants: ProductVariant[];
