@@ -11,6 +11,10 @@ import {
   UploadedFile,
   HttpCode,
   HttpStatus,
+  ParseFilePipe,
+  FileTypeValidator,
+  MaxFileSizeValidator,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -60,7 +64,9 @@ export class DesignsController {
 
   @Roles(Role.ADMIN)
   @Post()
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(
+    FileInterceptor('image', { storage: multer.memoryStorage() }),
+  )
   @ApiOperation({ summary: 'Crear diseño con imagen (ADMIN)' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -69,21 +75,38 @@ export class DesignsController {
       properties: {
         name: { type: 'string', example: 'Diseño Floral' },
         description: { type: 'string', example: 'Patrón floral minimalista' },
-        image: { type: 'string', format: 'binary' },
+        image: {
+          type: 'string',
+          format: 'binary',
+          description: 'Solo JPG, PNG o WEBP. Tamaño máximo: 5MB',
+        },
       },
     },
   })
   @ApiResponse({ status: 201, description: 'Diseño creado' })
+  @ApiResponse({ status: 400, description: 'Imagen o datos inválidos' })
   create(
     @Body() dto: CreateDesignDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new FileTypeValidator({ fileType: /(jpg|jpeg|png|webp)$/i }),
+          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }),
+        ],
+        exceptionFactory: (err: any) =>
+          new BadRequestException(err?.message ?? 'Imagen inválida'),
+      }),
+    )
+    file: Express.Multer.File,
   ) {
     return this.designsService.create(dto, file);
   }
 
   @Roles(Role.ADMIN)
   @Patch(':id')
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(
+    FileInterceptor('image', { storage: multer.memoryStorage() }),
+  )
   @ApiOperation({ summary: 'Actualizar diseño (ADMIN)' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -98,10 +121,20 @@ export class DesignsController {
     },
   })
   @ApiResponse({ status: 200, description: 'Diseño actualizado' })
+  @ApiResponse({ status: 400, description: 'Imagen o datos inválidos' })
   update(
     @Param('id') id: string,
     @Body() dto: UpdateDesignDto,
-    @UploadedFile() file?: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new FileTypeValidator({ fileType: /(jpg|jpeg|png|webp)$/i }),
+          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }),
+        ],
+        exceptionFactory: (err) => new BadRequestException(err.message),
+      }),
+    )
+    file?: Express.Multer.File,
   ) {
     return this.designsService.update(id, dto, file);
   }

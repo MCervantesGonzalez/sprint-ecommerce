@@ -7,6 +7,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CreateVariantDto } from './dto/create-variant.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto';
+import { StorageService } from '../storage/storage.service';
 
 @Injectable()
 export class ProductsService {
@@ -15,6 +16,7 @@ export class ProductsService {
     private readonly productRepository: Repository<Product>,
     @InjectRepository(ProductVariant)
     private readonly variantRepository: Repository<ProductVariant>,
+    private readonly storageService: StorageService,
   ) {}
 
   // PRODUCTS
@@ -37,13 +39,35 @@ export class ProductsService {
     return product;
   }
 
-  async create(dto: CreateProductDto): Promise<Product> {
+  async create(
+    dto: CreateProductDto,
+    file?: Express.Multer.File,
+  ): Promise<Product> {
     const product = this.productRepository.create(dto);
+
+    if (file) {
+      const uploaded = await this.storageService.uploadImage(file, 'products');
+      product.image_url = uploaded.secure_url;
+      product.public_id = uploaded.public_id;
+    }
     return this.productRepository.save(product);
   }
 
-  async update(id: string, dto: UpdateProductDto): Promise<Product> {
+  async update(
+    id: string,
+    dto: UpdateProductDto,
+    file?: Express.Multer.File,
+  ): Promise<Product> {
     const product = await this.findOne(id);
+
+    if (file) {
+      if (product.public_id) {
+        await this.storageService.deleteImage(product.public_id);
+      }
+      const uploaded = await this.storageService.uploadImage(file, 'products');
+      product.image_url = uploaded.secure_url;
+      product.public_id = uploaded.public_id;
+    }
     Object.assign(product, dto);
     return this.productRepository.save(product);
   }

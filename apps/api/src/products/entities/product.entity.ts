@@ -25,6 +25,12 @@ export class Product {
   @Column({ default: true })
   active!: boolean;
 
+  @Column({ nullable: true })
+  image_url!: string;
+
+  @Column({ nullable: true })
+  public_id!: string;
+
   @CreateDateColumn()
   created_at!: Date;
 
