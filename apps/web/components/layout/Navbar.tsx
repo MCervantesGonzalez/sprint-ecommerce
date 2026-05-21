@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +17,7 @@ import { useCartStore } from "@/store/cartStore";
 import { useCart } from "@/hooks/useCart";
 import { useTheme } from "next-themes";
 import { LogoNavbar } from "@/components/layout/icons/brands/NavbarLogo";
+import { useProfile } from "@/hooks/useProfile";
 
 function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -43,6 +45,7 @@ function ThemeToggle() {
 export function Navbar() {
   const router = useRouter();
   const { user, isAuthenticated, logout } = useAuthStore();
+  const { data: profile } = useProfile();
   const { openCart } = useCartStore();
   const { data: cart } = useCart();
 
@@ -122,12 +125,34 @@ export function Navbar() {
                 )}
 
                 {/* Info de Usuario */}
-                <div className="hidden sm:flex items-center gap-2 px-2 py-1 rounded-md bg-muted/50 border border-transparent">
+                {/* <div className="hidden sm:flex items-center gap-2 px-2 py-1 rounded-md bg-muted/50 border border-transparent">
                   <User className="h-3 sm:h-4 w-3 sm:w-4 text-muted-foreground" />
                   <span className="hidden lg:block text-xs font-medium text-muted-foreground">
                     {user?.name}
                   </span>
-                </div>
+                </div> */}
+                <Link
+                  href="/profile"
+                  className="flex items-center gap-2 text-sm hover:opacity-70 transition-opacity"
+                >
+                  {profile?.avatar_url ? (
+                    <div className="h-8 w-8 rounded-full overflow-hidden relative">
+                      <Image
+                        src={profile.avatar_url}
+                        alt={user?.name ?? ""}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+                      <User className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                  )}
+                  <span className="hidden md:block text-muted-foreground text-sm">
+                    {user?.name}
+                  </span>
+                </Link>
 
                 {/* Logout */}
                 <Button
