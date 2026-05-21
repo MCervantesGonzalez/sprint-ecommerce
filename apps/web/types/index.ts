@@ -3,6 +3,8 @@ export interface User {
   name: string;
   email: string;
   role: "ADMIN" | "CLIENT";
+  phone?: string;
+  avatar_url?: string;
 }
 
 export interface ProductVariant {
