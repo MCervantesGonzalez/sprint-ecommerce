@@ -14,6 +14,7 @@ import {
   ApiTags,
   ApiQuery,
   ApiResponse,
+  ApiConsumes,
 } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -27,6 +28,8 @@ import {
 } from './dto/admin-query.dto';
 import { OrderStatus } from '../orders/entities/order.entity';
 import type { Response } from 'express';
+import { UseInterceptors, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Admin')
 @ApiBearerAuth()
@@ -84,9 +87,15 @@ export class AdminController {
 
   @Roles(Role.ADMIN)
   @Patch('products/:id')
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Actualizar producto incluyendo inactivos (ADMIN)' })
-  updateProduct(@Param('id') id: string, @Body() body: any) {
-    return this.adminService.updateProduct(id, body);
+  updateProduct(
+    @Param('id') id: string,
+    @Body() body: any,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    return this.adminService.updateProduct(id, body, file);
   }
 
   @Get('products/low-stock')

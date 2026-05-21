@@ -5,6 +5,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Product } from "@/types";
+import Image from "next/image";
 
 interface ProductCardProps {
   product: Product;
@@ -28,16 +29,26 @@ export function ProductCard({ product }: ProductCardProps) {
     <Card className="flex flex-col hover:shadow-lg transition-shadow">
       <CardContent className="pt-4 sm:pt-6 flex-1">
         {/* Imagen placeholder */}
-        <div className="w-full h-32 sm:h-40 md:h-48 bg-gray-100 rounded-md flex items-center justify-center mb-3 sm:mb-4">
-          <span className="text-2xl sm:text-3xl md:text-4xl">
-            {product.category === "TAZA"
-              ? "☕"
-              : product.category === "PLAYERA"
-                ? "👕"
-                : product.category === "HOODIE"
-                  ? "🧥"
-                  : "🛍️"}
-          </span>
+        {/* Reemplaza el placeholder por esto: */}
+        <div className="w-full h-48 bg-gray-100 rounded-md flex items-center justify-center mb-4 overflow-hidden relative">
+          {product.image_url ? (
+            <Image
+              src={product.image_url}
+              alt={product.name}
+              fill
+              className="object-cover"
+            />
+          ) : (
+            <span className="text-4xl">
+              {product.category === "TAZA"
+                ? "☕"
+                : product.category === "PLAYERA"
+                  ? "👕"
+                  : product.category === "HOODIE"
+                    ? "🧥"
+                    : "🛍️"}
+            </span>
+          )}
         </div>
 
         <div className="space-y-1 sm:space-y-2">

@@ -19,6 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import Image from "next/image";
 import { Product, ProductVariant } from "@/types";
 import { Plus, Pencil, Package, EyeOff, Eye } from "lucide-react";
 
@@ -32,6 +33,8 @@ const categoryColors: Record<string, string> = {
 };
 
 export default function AdminProductsPage() {
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
   const { data: products, isLoading } = useAdminProducts();
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
@@ -62,6 +65,8 @@ export default function AdminProductsPage() {
   const openCreateProduct = () => {
     setEditingProduct(null);
     setProductForm({ name: "", category: "TAZA", description: "" });
+    setFile(null);
+    setPreview(null);
     setShowProductModal(true);
   };
 
@@ -72,7 +77,16 @@ export default function AdminProductsPage() {
       category: product.category,
       description: product.description ?? "",
     });
+    setFile(null);
+    setPreview(product.image_url ?? null);
     setShowProductModal(true);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setFile(f);
+    setPreview(URL.createObjectURL(f));
   };
 
   const openCreateVariant = (productId: string) => {
@@ -95,13 +109,17 @@ export default function AdminProductsPage() {
   };
 
   const handleProductSubmit = async () => {
+    const formData = new FormData();
+    formData.append("name", productForm.name);
+    formData.append("category", productForm.category);
+    if (productForm.description)
+      formData.append("description", productForm.description);
+    if (file) formData.append("image", file);
+
     if (editingProduct) {
-      await updateProduct.mutateAsync({
-        id: editingProduct.id,
-        data: productForm,
-      });
+      await updateProduct.mutateAsync({ id: editingProduct.id, formData });
     } else {
-      await createProduct.mutateAsync(productForm);
+      await createProduct.mutateAsync(formData);
     }
     setShowProductModal(false);
   };
@@ -123,9 +141,12 @@ export default function AdminProductsPage() {
   };
 
   const handleToggleProduct = async (product: Product) => {
+    const formData = new FormData();
+    formData.append("active", String(!product.active));
+
     await updateProduct.mutateAsync({
       id: product.id,
-      data: { active: !product.active },
+      formData,
     });
   };
 
@@ -320,6 +341,31 @@ export default function AdminProductsPage() {
                   </option>
                 ))}
               </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>
+                Imagen{" "}
+                <span className="text-muted-foreground text-xs">
+                  {editingProduct ? "(opcional)" : "(opcional)"}
+                </span>
+              </Label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/80 cursor-pointer"
+              />
+              {preview && (
+                <div className="relative w-full h-40 rounded-lg overflow-hidden bg-gray-100">
+                  <Image
+                    src={preview}
+                    alt="Preview"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              )}
             </div>
             <div className="space-y-2">
               <Label>Descripción (opcional)</Label>
