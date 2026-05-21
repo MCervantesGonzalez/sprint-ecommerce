@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThanOrEqual } from 'typeorm';
 import { Order } from '../orders/entities/order.entity';
@@ -11,6 +11,7 @@ import {
 } from './dto/admin-query.dto';
 import { Product } from '../products/entities/product.entity';
 import { Design } from '../designs/entities/design.entity';
+import { StorageService } from '../storage/storage.service';
 
 @Injectable()
 export class AdminService {
@@ -23,6 +24,7 @@ export class AdminService {
     private readonly designRepository: Repository<Design>,
     @InjectRepository(ProductVariant)
     private readonly variantRepo: Repository<ProductVariant>,
+    private readonly storageService: StorageService,
   ) {}
 
   // ─── Dashboard ────────────────────────────────────────────────────────────
@@ -111,11 +113,24 @@ export class AdminService {
     });
   }
 
-  async updateProduct(id: string, data: Partial<Product>): Promise<Product> {
+  async updateProduct(
+    id: string,
+    data: Partial<Product>,
+    file?: Express.Multer.File,
+  ): Promise<Product> {
     const product = await this.productRepository.findOne({
       where: { id },
     });
     if (!product) throw new NotFoundException('Producto no encontrado');
+
+    if (file) {
+      if (product.public_id) {
+        await this.storageService.deleteImage(product.public_id);
+      }
+      const uploaded = await this.storageService.uploadImage(file, 'products');
+      product.image_url = uploaded.secure_url;
+      product.public_id = uploaded.public_id;
+    }
     Object.assign(product, data);
     return this.productRepository.save(product);
   }

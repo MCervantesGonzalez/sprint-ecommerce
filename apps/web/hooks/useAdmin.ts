@@ -74,15 +74,14 @@ export function useUpdateOrderStatus() {
 export function useCreateProduct() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: {
-      name: string;
-      category: string;
-      description?: string;
-    }) => {
-      const { data: res } = await api.post("/products", data);
+    mutationFn: async (formData: FormData) => {
+      const { data: res } = await api.post("/products", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       return res;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
       queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
@@ -93,17 +92,14 @@ export function useUpdateProduct() {
   return useMutation({
     mutationFn: async ({
       id,
-      data,
+      formData,
     }: {
       id: string;
-      data: {
-        name?: string;
-        category?: string;
-        description?: string;
-        active?: boolean;
-      };
+      formData: FormData;
     }) => {
-      const { data: res } = await api.patch(`/admin/products/${id}`, data);
+      const { data: res } = await api.patch(`/admin/products/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       return res;
     },
     onSuccess: () => {

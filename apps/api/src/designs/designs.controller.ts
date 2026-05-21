@@ -131,7 +131,10 @@ export class DesignsController {
           new FileTypeValidator({ fileType: /(jpg|jpeg|png|webp)$/i }),
           new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }),
         ],
-        exceptionFactory: (err) => new BadRequestException(err.message),
+        exceptionFactory: (err: any) =>
+          new BadRequestException(
+            typeof err === 'string' ? err : (err?.message ?? 'Imagen inválida'),
+          ),
       }),
     )
     file?: Express.Multer.File,

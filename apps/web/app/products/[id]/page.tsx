@@ -91,16 +91,25 @@ export default function ProductPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
         {/* Imagen placeholder */}
-        <div className="w-full h-64 sm:h-80 bg-gray-100 rounded-lg flex items-center justify-center">
-          <span className="text-6xl sm:text-8xl">
-            {product.category === "TAZA"
-              ? "☕"
-              : product.category === "PLAYERA"
-                ? "👕"
-                : product.category === "HOODIE"
-                  ? "🧥"
-                  : "🛍️"}
-          </span>
+        <div className="w-full h-80 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden relative">
+          {product.image_url ? (
+            <Image
+              src={product.image_url}
+              alt={product.name}
+              fill
+              className="object-cover"
+            />
+          ) : (
+            <span className="text-8xl">
+              {product.category === "TAZA"
+                ? "☕"
+                : product.category === "PLAYERA"
+                  ? "👕"
+                  : product.category === "HOODIE"
+                    ? "🧥"
+                    : "🛍️"}
+            </span>
+          )}
         </div>
 
         {/* Variantes + Acción */}
