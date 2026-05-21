@@ -9,23 +9,29 @@ import { Role } from '../common/enums/role.enum';
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column()
-  name: string;
+  name!: string;
 
   @Column({ unique: true })
-  email: string;
+  email!: string;
 
   @Column()
-  password_hash: string;
+  password_hash!: string;
 
   @Column({ type: 'enum', enum: Role, default: Role.CLIENT })
-  role: Role;
+  role!: Role;
 
   @Column({ nullable: true })
-  phone: string;
+  phone!: string;
+
+  @Column({ nullable: true })
+  avatar_url!: string;
+
+  @Column({ nullable: true })
+  avatar_public_id!: string;
 
   @CreateDateColumn()
-  created_at: Date;
+  created_at!: Date;
 }

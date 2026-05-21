@@ -1,14 +1,48 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
+import { StorageService } from '../storage/storage.service';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { use } from 'passport';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly storageService: StorageService,
   ) {}
+
+  async getProfile(id: string): Promise<User> {
+    const user = await this.findById(id);
+    if (!user) throw new NotFoundException('Usuario no encontrado');
+    return user;
+  }
+
+  async updateProfile(
+    id: string,
+    dto: UpdateProfileDto,
+    file?: Express.Multer.File,
+  ): Promise<User> {
+    const user = await this.getProfile(id);
+
+    if (file) {
+      if (user.avatar_public_id) {
+        await this.storageService.deleteImage(user.avatar_public_id);
+      }
+      const uploaded = await this.storageService.uploadImage(file, 'avatars');
+      user.avatar_url = uploaded.secure_url;
+      user.avatar_public_id = uploaded.public_id;
+    }
+
+    Object.assign(user, dto);
+    return this.userRepository.save(user);
+  }
 
   async findByEmail(email: string): Promise<User | null> {
     return this.userRepository.findOne({ where: { email } });
