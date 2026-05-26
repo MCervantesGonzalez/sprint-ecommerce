@@ -6,6 +6,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
+import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,6 +26,11 @@ export default function RootLayout({
         <Providers>
           {/* Añadimos un contenedor flex que ocupe todo el alto */}
           <div className="relative flex min-h-screen flex-col">
+            <AnnouncementBar
+              message="✈️ Envíos a toda la república mexicana"
+              link="/shipping"
+              linkText="Ver más"
+            />
             <Navbar />
 
             {/* 

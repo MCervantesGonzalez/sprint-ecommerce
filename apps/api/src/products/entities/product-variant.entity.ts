@@ -31,11 +31,13 @@ export class ProductVariant {
     type: 'decimal',
     precision: 10,
     scale: 2,
+    nullable: true,
     transformer: {
       to: (value: number) => value,
-      from: (value: string) => parseFloat(value),
+      from: (value: string) => (value ? parseFloat(value) : null),
     },
   })
+  compare_price!: number | null;
   base_price!: number;
 
   @Column({ default: true })

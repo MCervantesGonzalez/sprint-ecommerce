@@ -30,4 +30,13 @@ export class CreateVariantDto {
   @IsBoolean()
   @IsOptional()
   active?: boolean;
+
+  @ApiPropertyOptional({
+    example: 200.0,
+    description: 'Precio original antes de oferta ',
+  })
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  compare_price?: number;
 }
