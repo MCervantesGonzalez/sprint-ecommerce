@@ -13,6 +13,7 @@ export interface ProductVariant {
   color: string;
   stock: number;
   base_price: number;
+  compare_price?: number | null;
   active: boolean;
 }
 
