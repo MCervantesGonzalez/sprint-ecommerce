@@ -144,9 +144,31 @@ export default function ProductPage() {
                         Stock: {variant.stock}
                       </p>
                     </div>
-                    <p className="font-bold text-sm sm:text-lg whitespace-nowrap">
-                      ${variant.base_price}
-                    </p>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <p className="font-bold text-sm sm:text-lg whitespace-nowrap">
+                          ${variant.base_price}
+                        </p>
+                        {variant.compare_price &&
+                          variant.compare_price > variant.base_price && (
+                            <>
+                              <p className="text-sm text-muted-foreground line-through">
+                                ${variant.compare_price}
+                              </p>
+                              <span className="text-xs font-bold bg-primary text-primary-foreground px-1.5 py-0.5 rounded">
+                                -
+                                {Math.round(
+                                  (1 -
+                                    variant.base_price /
+                                      variant.compare_price) *
+                                    100,
+                                )}
+                                %
+                              </span>
+                            </>
+                          )}
+                      </div>
+                    </div>
                   </div>
                 ))}
             </div>

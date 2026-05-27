@@ -60,6 +60,7 @@ export default function AdminProductsPage() {
     color: "",
     stock: 0,
     base_price: 0,
+    compare_price: 0,
   });
 
   const openCreateProduct = () => {
@@ -92,7 +93,13 @@ export default function AdminProductsPage() {
   const openCreateVariant = (productId: string) => {
     setEditingVariant(null);
     setSelectedProductId(productId);
-    setVariantForm({ size: "", color: "", stock: 0, base_price: 0 });
+    setVariantForm({
+      size: "",
+      color: "",
+      stock: 0,
+      base_price: 0,
+      compare_price: 0,
+    });
     setShowVariantModal(true);
   };
 
@@ -104,6 +111,7 @@ export default function AdminProductsPage() {
       color: variant.color,
       stock: variant.stock,
       base_price: variant.base_price,
+      compare_price: variant.compare_price ?? 0,
     });
     setShowVariantModal(true);
   };
@@ -125,16 +133,25 @@ export default function AdminProductsPage() {
   };
 
   const handleVariantSubmit = async () => {
+    const data = {
+      size: variantForm.size,
+      color: variantForm.color,
+      stock: variantForm.stock,
+      base_price: variantForm.base_price,
+      compare_price:
+        variantForm.compare_price > 0 ? variantForm.compare_price : null,
+    };
+
     if (editingVariant) {
       await updateVariant.mutateAsync({
         productId: selectedProductId,
         variantId: editingVariant.id,
-        data: variantForm,
+        data,
       });
     } else {
       await createVariant.mutateAsync({
         productId: selectedProductId,
-        data: variantForm,
+        data,
       });
     }
     setShowVariantModal(false);
@@ -451,6 +468,26 @@ export default function AdminProductsPage() {
                   }
                 />
               </div>
+            </div>
+            <div className="space-y-2">
+              <Label>
+                Precio antes de oferta{" "}
+                <span className="text-xs text-muted-foreground">
+                  (opcional)
+                </span>
+              </Label>
+              <Input
+                type="number"
+                min={0}
+                value={variantForm.compare_price}
+                onChange={(e) =>
+                  setVariantForm({
+                    ...variantForm,
+                    compare_price: Number(e.target.value),
+                  })
+                }
+                placeholder="Ej: 200.00"
+              />
             </div>
             <Button
               className="w-full"
