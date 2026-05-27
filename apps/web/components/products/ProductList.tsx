@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { useProducts } from "@/hooks/useProducts";
 import { ProductCard } from "./ProductCard";
+import { QuickViewModal } from "./QuickViewModal";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Product } from "@/types";
 
 function ProductSkeleton() {
   return (
@@ -17,6 +20,9 @@ function ProductSkeleton() {
 
 export function ProductList() {
   const { data: products, isLoading, isError } = useProducts();
+  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(
+    null,
+  );
 
   if (isLoading) {
     return (
@@ -47,10 +53,21 @@ export function ProductList() {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
-      ))}
-    </div>
+    <>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {products.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={product}
+            onQuickView={setQuickViewProduct}
+          />
+        ))}
+      </div>
+
+      <QuickViewModal
+        product={quickViewProduct}
+        onClose={() => setQuickViewProduct(null)}
+      />
+    </>
   );
 }
