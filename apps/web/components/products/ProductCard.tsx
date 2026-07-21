@@ -6,9 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Product } from "@/types";
 import Image from "next/image";
+import { Eye } from "lucide-react";
 
 interface ProductCardProps {
   product: Product;
+  onQuickView?: (product: Product) => void;
 }
 
 const categoryColors: Record<string, string> = {
@@ -18,7 +20,7 @@ const categoryColors: Record<string, string> = {
   OTRO: "bg-gray-100 text-gray-800",
 };
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, onQuickView }: ProductCardProps) {
   const activeVariants = product.variants.filter((v) => v.active);
 
   const minPrice = activeVariants.length
@@ -42,9 +44,9 @@ export function ProductCard({ product }: ProductCardProps) {
   const totalStock = product.variants.reduce((sum, v) => sum + v.stock, 0);
 
   return (
-    <Card className="flex flex-col hover:shadow-lg transition-shadow">
+    <Card className="flex flex-col hover:shadow-lg transition-shadow group">
       <CardContent className="pt-4 sm:pt-6 flex-1">
-        {/* Imagen */}
+        {/* Imagen con botón de vista rápida */}
         <div className="w-full h-48 bg-gray-100 rounded-md flex items-center justify-center mb-4 overflow-hidden relative">
           {product.image_url ? (
             <Image
@@ -63,6 +65,19 @@ export function ProductCard({ product }: ProductCardProps) {
                     ? "🧥"
                     : "🛍️"}
             </span>
+          )}
+          {/* Botón vista rápida */}
+          {onQuickView && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                onQuickView(product);
+              }}
+              className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-background/90 text-foreground text-xs px-3 py-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 whitespace-nowrap shadow"
+            >
+              <Eye className="h-3 w-3" />
+              Vista rápida
+            </button>
           )}
         </div>
 
