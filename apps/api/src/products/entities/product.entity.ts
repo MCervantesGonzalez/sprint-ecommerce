@@ -22,6 +22,9 @@ export class Product {
   @Column({ nullable: true })
   description!: string;
 
+  @Column({ default: false })
+  featured!: boolean;
+
   @Column({ default: true })
   active!: boolean;
 

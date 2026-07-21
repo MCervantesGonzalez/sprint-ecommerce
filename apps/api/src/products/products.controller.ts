@@ -54,6 +54,14 @@ export class ProductsController {
   }
 
   @Public()
+  @Get('featured')
+  @ApiOperation({ summary: 'Listar productos destacados' })
+  @ApiResponse({ status: 200, description: 'Lista de productos destacados' })
+  findFeatured() {
+    return this.productsService.findFeatured();
+  }
+
+  @Public()
   @Get(':id')
   @ApiOperation({ summary: 'Obtener un producto por ID' })
   @ApiParam({ name: 'id', description: 'UUID del producto' })

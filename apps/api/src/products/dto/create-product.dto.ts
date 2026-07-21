@@ -22,4 +22,9 @@ export class CreateProductDto {
   @IsBoolean()
   @IsOptional()
   active?: boolean;
+
+  @ApiPropertyOptional({ example: false })
+  @IsBoolean()
+  @IsOptional()
+  featured?: boolean;
 }
