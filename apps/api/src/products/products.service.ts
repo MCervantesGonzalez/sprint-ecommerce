@@ -79,6 +79,13 @@ export class ProductsService {
     await this.productRepository.save(product);
   }
 
+  async findFeatured(): Promise<Product[]> {
+    return this.productRepository.find({
+      where: { active: true, featured: true },
+      relations: ['variants'],
+    });
+  }
+
   // VARIANTS
 
   async findVariant(
