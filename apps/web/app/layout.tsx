@@ -37,7 +37,7 @@ export default function RootLayout({
                flex-1: Hace que el main crezca para llenar el espacio vacío.
                py-8: Mantiene la separación con navbar y footer.
             */}
-            <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+            <main className="flex-1 mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
               {children}
             </main>
 
