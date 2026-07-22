@@ -72,7 +72,7 @@ export function Navbar() {
           {/* 2. LINKS DE NAVEGACIÓN */}
           <div className="hidden md:flex items-center gap-6 lg:gap-8">
             <Link
-              href="/"
+              href="/catalog"
               className="text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
             >
               Catálogo
