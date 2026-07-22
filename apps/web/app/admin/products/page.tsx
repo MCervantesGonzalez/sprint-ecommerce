@@ -53,6 +53,7 @@ export default function AdminProductsPage() {
     name: "",
     category: "TAZA",
     description: "",
+    featured: false,
   });
 
   const [variantForm, setVariantForm] = useState({
@@ -65,7 +66,12 @@ export default function AdminProductsPage() {
 
   const openCreateProduct = () => {
     setEditingProduct(null);
-    setProductForm({ name: "", category: "TAZA", description: "" });
+    setProductForm({
+      name: "",
+      category: "TAZA",
+      description: "",
+      featured: false,
+    });
     setFile(null);
     setPreview(null);
     setShowProductModal(true);
@@ -77,6 +83,7 @@ export default function AdminProductsPage() {
       name: product.name,
       category: product.category,
       description: product.description ?? "",
+      featured: product.featured ?? false,
     });
     setFile(null);
     setPreview(product.image_url ?? null);
@@ -122,6 +129,7 @@ export default function AdminProductsPage() {
     formData.append("category", productForm.category);
     if (productForm.description)
       formData.append("description", productForm.description);
+    formData.append("featured", String(productForm.featured));
     if (file) formData.append("image", file);
 
     if (editingProduct) {
@@ -404,6 +412,19 @@ export default function AdminProductsPage() {
             >
               {editingProduct ? "Guardar cambios" : "Crear producto"}
             </Button>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="featured"
+              checked={productForm.featured}
+              onChange={(e) =>
+                setProductForm({ ...productForm, featured: e.target.checked })
+              }
+              className="h-4 w-4 rounded border-input"
+            />
+            <Label htmlFor="featured">Producto destacado ⭐</Label>
           </div>
         </DialogContent>
       </Dialog>

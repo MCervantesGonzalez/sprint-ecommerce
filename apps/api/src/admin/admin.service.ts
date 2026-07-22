@@ -123,6 +123,15 @@ export class AdminService {
     });
     if (!product) throw new NotFoundException('Producto no encontrado');
 
+    const dataAny = data as any;
+    if (dataAny.featured !== undefined) {
+      dataAny.featured =
+        dataAny.featured === 'true' || dataAny.featured === true;
+    }
+    if (dataAny.active !== undefined) {
+      dataAny.active = dataAny.active === 'true' || dataAny.active === true;
+    }
+
     if (file) {
       if (product.public_id) {
         await this.storageService.deleteImage(product.public_id);

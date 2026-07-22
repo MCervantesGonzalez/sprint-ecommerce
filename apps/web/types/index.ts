@@ -24,6 +24,7 @@ export interface Product {
   description: string;
   image_url?: string;
   public_id?: string;
+  featured?: boolean;
   active: boolean;
   created_at: string;
   variants: ProductVariant[];
