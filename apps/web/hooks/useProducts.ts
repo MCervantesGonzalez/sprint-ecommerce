@@ -33,3 +33,13 @@ export function useProductDesigns(productId: string) {
     enabled: !!productId,
   });
 }
+
+export function useFeaturedProducts() {
+  return useQuery<Product[]>({
+    queryKey: ["products", "featured"],
+    queryFn: async () => {
+      const { data } = await api.get("/products/featured");
+      return data;
+    },
+  });
+}
