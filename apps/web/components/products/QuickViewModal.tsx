@@ -65,13 +65,13 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Imagen */}
-          <div className="relative w-full h-64 md:h-80 bg-gray-100 rounded-xl overflow-hidden">
+          <div className="relative w-full aspect-square bg-gray-100 rounded-xl overflow-hidden">
             {product.image_url ? (
               <Image
                 src={product.image_url}
                 alt={product.name}
                 fill
-                className="object-cover"
+                className="object-contain p-4"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-6xl">
@@ -107,8 +107,8 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
                       tabIndex={0}
                       className={`cursor-pointer rounded-lg border p-3 flex items-center justify-between transition-colors ${
                         selectedVariant?.id === variant.id
-                          ? "border-primary ring-1 ring-primary"
-                          : "hover:border-primary border-border"
+                          ? "border-brand-primary ring-1 ring-brand-primary"
+                          : "hover:border-brand-primary border-border"
                       }`}
                       onClick={() => setSelectedVariant(variant)}
                       onKeyDown={(e) =>
@@ -121,7 +121,7 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
                       <div className="flex items-center gap-2">
                         {variant.compare_price &&
                           variant.compare_price > variant.base_price && (
-                            <span className="text-xs text-muted-foreground line-through">
+                            <span className="text-xs text-brand-medium line-through">
                               ${variant.compare_price}
                             </span>
                           )}
@@ -151,8 +151,8 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
                       tabIndex={0}
                       className={`cursor-pointer rounded-lg border overflow-hidden transition-colors ${
                         selectedDesign?.id === pd.id
-                          ? "border-primary ring-1 ring-primary"
-                          : "hover:border-primary border-border"
+                          ? "border-brand-primary ring-1 ring-brand-primary"
+                          : "hover:border-brand-primary border-border"
                       }`}
                       onClick={() =>
                         setSelectedDesign(
@@ -183,7 +183,7 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
                 {designs.length > 6 && (
                   <Link
                     href={`/products/${product.id}`}
-                    className="text-xs text-primary hover:underline"
+                    className="text-xs text-brand-primary hover:underline"
                     onClick={onClose}
                   >
                     Ver todos los diseños ({designs.length})
@@ -206,7 +206,7 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
               )}
 
               <Button
-                className="w-full"
+                className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white"
                 disabled={!selectedVariant || addToCart.isPending}
                 onClick={handleAddToCart}
               >

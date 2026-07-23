@@ -89,18 +89,18 @@ export default function ProductPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
-        {/* Imagen placeholder */}
-        <div className="w-full h-80 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden relative">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+        {/* Imagen */}
+        <div className="max-w-96 aspect-square bg-gray-100 rounded-xl overflow-hidden relative">
           {product.image_url ? (
             <Image
               src={product.image_url}
               alt={product.name}
               fill
-              className="object-cover"
+              className="object-contain p-6"
             />
           ) : (
-            <span className="text-8xl">
+            <div className="w-full h-full flex items-center justify-center text-8xl">
               {product.category === "TAZA"
                 ? "☕"
                 : product.category === "PLAYERA"
@@ -108,17 +108,29 @@ export default function ProductPage() {
                   : product.category === "HOODIE"
                     ? "🧥"
                     : "🛍️"}
-            </span>
+            </div>
           )}
         </div>
 
-        {/* Variantes + Acción */}
-        <div className="space-y-4 sm:space-y-6">
+        {/* Info — variantes y botón */}
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-bold">{product.name}</h1>
+              <Badge>{product.category}</Badge>
+            </div>
+            {product.description && (
+              <p className="text-muted-foreground">{product.description}</p>
+            )}
+          </div>
+
+          {/* Variantes */}
           <div>
-            <h2 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3">
+            <h2 className="text-lg font-semibold mb-3">
               Variantes disponibles
             </h2>
-            <div className="space-y-1.5 sm:space-y-2">
+            <div className="space-y-2">
               {product.variants
                 .filter((v) => v.active)
                 .map((variant) => (
@@ -126,48 +138,45 @@ export default function ProductPage() {
                     key={variant.id}
                     role="button"
                     tabIndex={0}
-                    className={`cursor-pointer rounded-lg sm:rounded-xl border p-3 sm:p-4 flex items-center justify-between transition-colors text-sm sm:text-base ${
+                    className={`cursor-pointer rounded-xl border p-4 flex items-center justify-between transition-colors ${
                       selectedVariant?.id === variant.id
-                        ? "border-primary ring-1 ring-primary"
-                        : "hover:border-primary border-border"
+                        ? "border-brand-primary ring-1 ring-brand-primary"
+                        : "hover:border-brand-primary border-border"
                     }`}
                     onClick={() => setSelectedVariant(variant)}
                     onKeyDown={(e) =>
                       e.key === "Enter" && setSelectedVariant(variant)
                     }
                   >
-                    <div className="space-y-0.5 sm:space-y-1 min-w-0">
-                      <p className="font-medium text-xs sm:text-sm">
+                    <div className="space-y-1">
+                      <p className="font-medium">
                         {variant.color} — {variant.size}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-sm text-muted-foreground">
                         Stock: {variant.stock}
                       </p>
                     </div>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-bold text-sm sm:text-lg whitespace-nowrap">
-                          ${variant.base_price}
-                        </p>
-                        {variant.compare_price &&
-                          variant.compare_price > variant.base_price && (
-                            <>
-                              <p className="text-sm text-muted-foreground line-through">
-                                ${variant.compare_price}
-                              </p>
-                              <span className="text-xs font-bold bg-primary text-primary-foreground px-1.5 py-0.5 rounded">
-                                -
-                                {Math.round(
-                                  (1 -
-                                    variant.base_price /
-                                      variant.compare_price) *
-                                    100,
-                                )}
-                                %
-                              </span>
-                            </>
-                          )}
-                      </div>
+                    <div className="flex items-center gap-2">
+                      {variant.compare_price &&
+                        variant.compare_price > variant.base_price && (
+                          <span className="text-sm text-brand-medium line-through">
+                            ${variant.compare_price}
+                          </span>
+                        )}
+                      <span className="font-bold text-lg text-brand-primary">
+                        ${variant.base_price}
+                      </span>
+                      {variant.compare_price &&
+                        variant.compare_price > variant.base_price && (
+                          <span className="text-xs font-bold bg-brand-primary text-white px-1.5 py-0.5 rounded">
+                            -
+                            {Math.round(
+                              (1 - variant.base_price / variant.compare_price) *
+                                100,
+                            )}
+                            %
+                          </span>
+                        )}
                     </div>
                   </div>
                 ))}
@@ -175,20 +184,17 @@ export default function ProductPage() {
           </div>
 
           {/* Precio total y botón */}
-          <div className="space-y-2 sm:space-y-3 pt-3 sm:pt-4 border-t">
+          <div className="space-y-3 pt-4 border-t">
             {totalPrice !== null && (
               <div className="flex justify-between items-center">
-                <span className="text-xs sm:text-base text-muted-foreground">
-                  Precio total
-                </span>
-                <span className="text-xl sm:text-2xl font-bold">
+                <span className="text-muted-foreground">Precio total</span>
+                <span className="text-2xl font-bold text-brand-primary">
                   ${totalPrice.toFixed(2)}
                 </span>
               </div>
             )}
-
             <Button
-              className="w-full text-sm sm:text-base h-9 sm:h-10"
+              className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white"
               size="lg"
               disabled={!selectedVariant || addToCart.isPending}
               onClick={handleAddToCart}
@@ -199,7 +205,6 @@ export default function ProductPage() {
                   ? "Selecciona una variante"
                   : "Agregar al carrito"}
             </Button>
-
             {!isAuthenticated && (
               <p className="text-xs text-center text-muted-foreground">
                 Necesitas iniciar sesión para agregar al carrito
@@ -233,8 +238,8 @@ export default function ProductPage() {
                 tabIndex={0}
                 className={`cursor-pointer rounded-lg sm:rounded-xl border transition-colors ${
                   selectedDesign?.id === pd.id
-                    ? "border-primary ring-1 ring-primary"
-                    : "hover:border-primary border-border"
+                    ? "border-brand-primary ring-1 ring-brand-primary"
+                    : "hover:border-brand-primary border-border"
                 }`}
                 onClick={() =>
                   setSelectedDesign(selectedDesign?.id === pd.id ? null : pd)

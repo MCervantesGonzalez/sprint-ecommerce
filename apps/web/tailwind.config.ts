@@ -43,6 +43,13 @@ const config: Config = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        brand: {
+          dark: "hsl(var(--brand-dark))",
+          medium: "hsl(var(--brand-medium))",
+          light: "hsl(var(--brand-light))",
+          primary: "hsl(var(--brand-primary))",
+          "primary-hover": "hsl(var(--brand-primary-hover))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
