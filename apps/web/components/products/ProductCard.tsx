@@ -47,7 +47,7 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
     <Card className="flex flex-col hover:shadow-lg transition-shadow group">
       <CardContent className="pt-4 sm:pt-6 flex-1">
         {/* Imagen con botón de vista rápida */}
-        <div className="w-full h-48 bg-gray-100 rounded-md flex items-center justify-center mb-4 overflow-hidden relative">
+        <div className="w-full aspect-square bg-gray-100 rounded-md flex items-center justify-center mb-4 overflow-hidden relative">
           {product.image_url ? (
             <Image
               src={product.image_url}
@@ -99,15 +99,15 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
 
           {/* Precio con oferta */}
           <div className="flex items-center gap-2 flex-wrap">
-            <p className="text-base sm:text-lg font-bold text-primary">
+            <p className="text-base sm:text-lg font-bold text-brand-primary">
               Desde ${minPrice.toFixed(2)}
             </p>
             {hasDiscount && (
               <>
-                <p className="text-sm text-muted-foreground line-through">
+                <p className="text-sm text-brand-medium line-through">
                   ${minComparePrice!.toFixed(2)}
                 </p>
-                <span className="text-xs font-bold bg-primary text-primary-foreground px-1.5 py-0.5 rounded">
+                <span className="text-xs font-bold bg-brand-primary text-white px-1.5 py-0.5 rounded">
                   -{discountPercent}%
                 </span>
               </>
@@ -122,7 +122,10 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
 
       <CardFooter>
         <Link href={`/products/${product.id}`} className="w-full">
-          <Button className="w-full" disabled={totalStock === 0}>
+          <Button
+            className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white"
+            disabled={totalStock === 0}
+          >
             {totalStock > 0 ? "Ver producto" : "Sin stock"}
           </Button>
         </Link>
