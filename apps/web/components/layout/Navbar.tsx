@@ -83,6 +83,18 @@ export function Navbar() {
             >
               Diseños
             </Link>
+            <Link
+              href="/personalization"
+              className="text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Personalización
+            </Link>
+            <Link
+              href="/custom-order"
+              className="text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Solicitar diseño
+            </Link>
           </div>
 
           {/* 3. ESPACIADOR (Push al final) */}
