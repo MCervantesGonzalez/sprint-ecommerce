@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import {
   useAdminProducts,
   useCreateProduct,
@@ -8,6 +9,9 @@ import {
   useCreateVariant,
   useUpdateVariant,
 } from "@/hooks/useAdmin";
+import { useDesigns } from "@/hooks/useDesigns";
+import { useProductDesigns } from "@/hooks/useProducts";
+import { api } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import Image from "next/image";
 import { Product, ProductVariant } from "@/types";
-import { Plus, Pencil, Package, EyeOff, Eye } from "lucide-react";
+import { Plus, Pencil, Package, EyeOff, Eye, Palette, X } from "lucide-react";
 
 const categories = ["TAZA", "PLAYERA", "HOODIE", "OTRO"];
 const materials = ["ALGODON", "POLIESTER", "CERAMICA", "ALUMINIO", "OTRO"];
@@ -44,11 +48,68 @@ export default function AdminProductsPage() {
 
   const [showProductModal, setShowProductModal] = useState(false);
   const [showVariantModal, setShowVariantModal] = useState(false);
+  const [showDesignsModal, setShowDesignsModal] = useState(false);
+  const [designProduct, setDesignProduct] = useState<Product | null>(null);
+  const [designSearch, setDesignSearch] = useState("");
+  const [extraPriceDrafts, setExtraPriceDrafts] = useState<
+    Record<string, number>
+  >({});
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [editingVariant, setEditingVariant] = useState<ProductVariant | null>(
     null,
   );
   const [selectedProductId, setSelectedProductId] = useState<string>("");
+
+  const queryClient = useQueryClient();
+  const { data: allDesigns } = useDesigns();
+  const { data: assignedDesigns } = useProductDesigns(designProduct?.id ?? "");
+
+  const assignDesign = useMutation({
+    mutationFn: async ({
+      productId,
+      designId,
+      extra_price,
+    }: {
+      productId: string;
+      designId: string;
+      extra_price?: number;
+    }) => {
+      const { data } = await api.post(`/designs/product/${productId}`, {
+        designId,
+        extra_price,
+      });
+      return data;
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["products", variables.productId, "designs"],
+      });
+    },
+  });
+
+  const removeDesign = useMutation({
+    mutationFn: async ({
+      productId,
+      designId,
+    }: {
+      productId: string;
+      designId: string;
+    }) => {
+      await api.delete(`/designs/product/${productId}/design/${designId}`);
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["products", variables.productId, "designs"],
+      });
+    },
+  });
+
+  const openDesignsModal = (product: Product) => {
+    setDesignProduct(product);
+    setExtraPriceDrafts({});
+    setDesignSearch("");
+    setShowDesignsModal(true);
+  };
 
   const [productForm, setProductForm] = useState({
     name: "",
@@ -246,6 +307,14 @@ export default function AdminProductsPage() {
                 <Badge className={categoryColors[product.category]}>
                   {product.category}
                 </Badge>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => openDesignsModal(product)}
+                >
+                  <Palette className="h-3 w-3 mr-1" />
+                  Diseños
+                </Button>
                 <Button
                   variant="outline"
                   size="sm"
@@ -544,6 +613,147 @@ export default function AdminProductsPage() {
               {editingVariant ? "Guardar cambios" : "Crear variante"}
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+      {/* Modal Diseños */}
+      <Dialog open={showDesignsModal} onOpenChange={setShowDesignsModal}>
+        <DialogContent className="bg-background border w-full sm:max-w-4xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Diseños de {designProduct?.name}</DialogTitle>
+          </DialogHeader>
+
+          {!allDesigns?.length ? (
+            <p className="text-sm text-muted-foreground">
+              No hay diseños creados aún.
+            </p>
+          ) : (
+            <>
+              <Input
+                placeholder="Buscar diseño por nombre..."
+                value={designSearch}
+                onChange={(e) => setDesignSearch(e.target.value)}
+                className="mb-1"
+              />
+
+              {(() => {
+                const filtered = allDesigns
+                  .filter((d) =>
+                    d.name
+                      .toLowerCase()
+                      .includes(designSearch.toLowerCase().trim()),
+                  )
+                  .sort((a, b) => {
+                    const aAssigned = assignedDesigns?.some(
+                      (pd) => pd.design.id === a.id,
+                    );
+                    const bAssigned = assignedDesigns?.some(
+                      (pd) => pd.design.id === b.id,
+                    );
+                    return aAssigned === bAssigned ? 0 : aAssigned ? -1 : 1;
+                  });
+
+                if (!filtered.length) {
+                  return (
+                    <p className="text-sm text-muted-foreground py-4 text-center">
+                      Ningún diseño coincide con &quot;{designSearch}&quot;.
+                    </p>
+                  );
+                }
+
+                return (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {filtered.map((design) => {
+                      const assigned = assignedDesigns?.find(
+                        (pd) => pd.design.id === design.id,
+                      );
+
+                      return (
+                        <div
+                          key={design.id}
+                          className={`border rounded-lg p-3 space-y-2 ${
+                            assigned ? "border-brand-primary" : "border-border"
+                          }`}
+                        >
+                          <div className="flex gap-2">
+                            <div className="relative h-14 w-14 rounded-md overflow-hidden bg-gray-100 flex-shrink-0">
+                              <Image
+                                src={design.image_url}
+                                alt={design.name}
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">
+                                {design.name}
+                              </p>
+                              {assigned && (
+                                <p className="text-xs text-brand-primary">
+                                  Asignado — extra: $
+                                  {Number(assigned.extra_price).toFixed(2)}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+
+                          {assigned ? (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="w-full text-red-600 hover:text-red-700"
+                              disabled={removeDesign.isPending}
+                              onClick={() =>
+                                designProduct &&
+                                removeDesign.mutate({
+                                  productId: designProduct.id,
+                                  designId: design.id,
+                                })
+                              }
+                            >
+                              <X className="h-3 w-3 mr-1" />
+                              Quitar
+                            </Button>
+                          ) : (
+                            <div className="flex gap-2">
+                              <Input
+                                type="number"
+                                min={0}
+                                placeholder="Extra $"
+                                className="h-8 text-xs flex-1 min-w-0"
+                                value={extraPriceDrafts[design.id] ?? ""}
+                                onChange={(e) =>
+                                  setExtraPriceDrafts({
+                                    ...extraPriceDrafts,
+                                    [design.id]: Number(e.target.value),
+                                  })
+                                }
+                              />
+                              <Button
+                                size="sm"
+                                className="h-8 flex-shrink-0"
+                                disabled={assignDesign.isPending}
+                                onClick={() =>
+                                  designProduct &&
+                                  assignDesign.mutate({
+                                    productId: designProduct.id,
+                                    designId: design.id,
+                                    extra_price:
+                                      extraPriceDrafts[design.id] || undefined,
+                                  })
+                                }
+                              >
+                                Asignar
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </div>
