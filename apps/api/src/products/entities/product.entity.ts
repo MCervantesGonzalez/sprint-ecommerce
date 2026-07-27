@@ -6,6 +6,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Category } from '../../common/enums/category.enum';
+import { Material } from '../../common/enums/material.enum';
 import { ProductVariant } from './product-variant.entity';
 
 @Entity('products')
@@ -18,6 +19,9 @@ export class Product {
 
   @Column({ type: 'enum', enum: Category })
   category!: Category;
+
+  @Column({ type: 'enum', enum: Material, nullable: true })
+  material!: Material | null;
 
   @Column({ nullable: true })
   description!: string;

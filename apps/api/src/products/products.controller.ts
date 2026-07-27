@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   UseGuards,
   HttpCode,
   HttpStatus,
@@ -26,6 +27,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CreateVariantDto } from './dto/create-variant.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto';
+import { FilterProductsDto } from './dto/filter-products.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -49,8 +51,8 @@ export class ProductsController {
   @Get()
   @ApiOperation({ summary: 'Listar todos los productos activos' })
   @ApiResponse({ status: 200, description: 'Lista de productos con variantes' })
-  findAll() {
-    return this.productsService.findAll();
+  findAll(@Query() filters: FilterProductsDto) {
+    return this.productsService.findAll(filters);
   }
 
   @Public()

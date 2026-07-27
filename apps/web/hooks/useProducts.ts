@@ -2,11 +2,16 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { Product, ProductDesign } from "@/types";
 
-export function useProducts() {
+export interface ProductFilters {
+  category?: string;
+  material?: string;
+}
+
+export function useProducts(filters?: ProductFilters) {
   return useQuery<Product[]>({
-    queryKey: ["products"],
+    queryKey: ["products", filters],
     queryFn: async () => {
-      const { data } = await api.get("/products");
+      const { data } = await api.get("/products", { params: filters });
       return data;
     },
   });
