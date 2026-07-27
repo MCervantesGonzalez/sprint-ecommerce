@@ -1,14 +1,39 @@
 "use client";
 
 import { useState, useRef } from "react";
+import {
+  useAddresses,
+  useCreateAddress,
+  useUpdateAddress,
+  useDeleteAddress,
+} from "@/hooks/useAddresses";
+
 import { useProfile, useUpdateProfile } from "@/hooks/useProfile";
 import { useMyOrders } from "@/hooks/useOrders";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Camera, User, Package, Phone, Mail } from "lucide-react";
+import { Address } from "@/types";
+import {
+  Camera,
+  User,
+  Package,
+  Phone,
+  Mail,
+  MapPin,
+  Plus,
+  Pencil,
+  Trash2,
+  Star,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -41,6 +66,69 @@ export default function ProfilePage() {
   const [preview, setPreview] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [success, setSuccess] = useState(false);
+  const { data: addresses } = useAddresses();
+  const createAddress = useCreateAddress();
+  const updateAddress = useUpdateAddress();
+  const deleteAddress = useDeleteAddress();
+
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [editingAddress, setEditingAddress] = useState<Address | null>(null);
+  const [addressForm, setAddressForm] = useState({
+    label: "",
+    street: "",
+    neighborhood: "",
+    city: "",
+    state: "",
+    zip_code: "",
+  });
+
+  const openCreateAddress = () => {
+    setEditingAddress(null);
+    setAddressForm({
+      label: "",
+      street: "",
+      neighborhood: "",
+      city: "",
+      state: "",
+      zip_code: "",
+    });
+    setShowAddressModal(true);
+  };
+
+  const openEditAddress = (address: Address) => {
+    setEditingAddress(address);
+    setAddressForm({
+      label: address.label ?? "",
+      street: address.street,
+      neighborhood: address.neighborhood ?? "",
+      city: address.city,
+      state: address.state,
+      zip_code: address.zip_code,
+    });
+    setShowAddressModal(true);
+  };
+
+  const handleAddressSubmit = async () => {
+    if (editingAddress) {
+      await updateAddress.mutateAsync({
+        id: editingAddress.id,
+        data: addressForm,
+      });
+    } else {
+      await createAddress.mutateAsync(addressForm);
+    }
+    setShowAddressModal(false);
+  };
+
+  const handleSetDefault = async (id: string) => {
+    await updateAddress.mutateAsync({ id, data: { is_default: true } });
+  };
+
+  const handleDeleteAddress = async (id: string) => {
+    if (confirm("¿Eliminar esta dirección?")) {
+      await deleteAddress.mutateAsync(id);
+    }
+  };
 
   const handleEditStart = () => {
     setForm({
@@ -228,6 +316,83 @@ export default function ProfilePage() {
         )}
       </div>
 
+      {/* Direcciones guardadas */}
+      <div className="border rounded-xl p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <MapPin className="h-5 w-5" />
+            Direcciones guardadas
+          </h2>
+          <Button variant="outline" size="sm" onClick={openCreateAddress}>
+            <Plus className="h-4 w-4 mr-1" />
+            Agregar
+          </Button>
+        </div>
+
+        {!addresses?.length ? (
+          <p className="text-sm text-muted-foreground">
+            No tienes direcciones guardadas.
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {addresses.map((address) => (
+              <div
+                key={address.id}
+                className="flex items-start justify-between gap-3 p-3 border rounded-lg"
+              >
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium">
+                      {address.label || "Dirección"}
+                    </p>
+                    {address.is_default && (
+                      <Badge className="bg-brand-primary text-white text-xs">
+                        Predeterminada
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {address.street}
+                    {address.neighborhood &&
+                      `, Col. ${address.neighborhood}`}, {address.city},{" "}
+                    {address.state}, CP {address.zip_code}
+                  </p>
+                </div>
+                <div className="flex gap-1 flex-shrink-0">
+                  {!address.is_default && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      title="Marcar como predeterminada"
+                      onClick={() => handleSetDefault(address.id)}
+                    >
+                      <Star className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={() => openEditAddress(address)}
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={() => handleDeleteAddress(address.id)}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Historial de compras */}
       <div className="border rounded-xl p-6 space-y-4">
         <div className="flex items-center justify-between">
@@ -273,6 +438,104 @@ export default function ProfilePage() {
           </div>
         )}
       </div>
+      {/* Modal de dirección */}
+      <Dialog open={showAddressModal} onOpenChange={setShowAddressModal}>
+        <DialogContent className="bg-background border">
+          <DialogHeader>
+            <DialogTitle>
+              {editingAddress ? "Editar dirección" : "Nueva dirección"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>
+                Etiqueta{" "}
+                <span className="text-muted-foreground text-xs">
+                  (opcional)
+                </span>
+              </Label>
+              <Input
+                value={addressForm.label}
+                onChange={(e) =>
+                  setAddressForm({ ...addressForm, label: e.target.value })
+                }
+                placeholder="Ej: Casa, Trabajo"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Calle y número</Label>
+              <Input
+                value={addressForm.street}
+                onChange={(e) =>
+                  setAddressForm({ ...addressForm, street: e.target.value })
+                }
+                placeholder="Ej: Av. Chapultepec 4563"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>
+                Colonia{" "}
+                <span className="text-muted-foreground text-xs">
+                  (opcional)
+                </span>
+              </Label>
+              <Input
+                value={addressForm.neighborhood}
+                onChange={(e) =>
+                  setAddressForm({
+                    ...addressForm,
+                    neighborhood: e.target.value,
+                  })
+                }
+                placeholder="Ej: Americana"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Ciudad</Label>
+                <Input
+                  value={addressForm.city}
+                  onChange={(e) =>
+                    setAddressForm({ ...addressForm, city: e.target.value })
+                  }
+                  placeholder="Ej: Guadalajara"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Estado</Label>
+                <Input
+                  value={addressForm.state}
+                  onChange={(e) =>
+                    setAddressForm({ ...addressForm, state: e.target.value })
+                  }
+                  placeholder="Ej: Jalisco"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Código Postal</Label>
+              <Input
+                value={addressForm.zip_code}
+                onChange={(e) =>
+                  setAddressForm({
+                    ...addressForm,
+                    zip_code: e.target.value,
+                  })
+                }
+                maxLength={5}
+                placeholder="Ej: 44160"
+              />
+            </div>
+            <Button
+              className="w-full"
+              onClick={handleAddressSubmit}
+              disabled={createAddress.isPending || updateAddress.isPending}
+            >
+              {editingAddress ? "Guardar cambios" : "Agregar dirección"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

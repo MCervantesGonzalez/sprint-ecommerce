@@ -7,6 +7,18 @@ export interface User {
   avatar_url?: string;
 }
 
+export interface Address {
+  id: string;
+  label?: string;
+  street: string;
+  neighborhood?: string;
+  city: string;
+  state: string;
+  zip_code: string;
+  is_default: boolean;
+  created_at: string;
+}
+
 export interface ProductVariant {
   id: string;
   size: string;
