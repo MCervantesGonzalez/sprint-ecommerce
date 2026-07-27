@@ -7,6 +7,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CreateVariantDto } from './dto/create-variant.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto';
+import { FilterProductsDto } from './dto/filter-products.dto';
 import { StorageService } from '../storage/storage.service';
 
 @Injectable()
@@ -21,9 +22,14 @@ export class ProductsService {
 
   // PRODUCTS
 
-  async findAll(): Promise<Product[]> {
+  async findAll(filters?: FilterProductsDto): Promise<Product[]> {
+    const where: Record<string, unknown> = { active: true };
+
+    if (filters?.category) where.category = filters.category;
+    if (filters?.material) where.material = filters.material;
+
     return this.productRepository.find({
-      where: { active: true },
+      where,
       relations: ['variants'],
     });
   }

@@ -24,6 +24,7 @@ import { Product, ProductVariant } from "@/types";
 import { Plus, Pencil, Package, EyeOff, Eye } from "lucide-react";
 
 const categories = ["TAZA", "PLAYERA", "HOODIE", "OTRO"];
+const materials = ["ALGODON", "POLIESTER", "CERAMICA", "ALUMINIO", "OTRO"];
 
 const categoryColors: Record<string, string> = {
   TAZA: "bg-blue-100 text-blue-800",
@@ -52,6 +53,7 @@ export default function AdminProductsPage() {
   const [productForm, setProductForm] = useState({
     name: "",
     category: "TAZA",
+    material: "OTRO",
     description: "",
     featured: false,
   });
@@ -69,6 +71,7 @@ export default function AdminProductsPage() {
     setProductForm({
       name: "",
       category: "TAZA",
+      material: "OTRO",
       description: "",
       featured: false,
     });
@@ -82,6 +85,7 @@ export default function AdminProductsPage() {
     setProductForm({
       name: product.name,
       category: product.category,
+      material: product.material ?? "OTRO",
       description: product.description ?? "",
       featured: product.featured ?? false,
     });
@@ -127,6 +131,7 @@ export default function AdminProductsPage() {
     const formData = new FormData();
     formData.append("name", productForm.name);
     formData.append("category", productForm.category);
+    formData.append("material", productForm.material);
     if (productForm.description)
       formData.append("description", productForm.description);
     formData.append("featured", String(productForm.featured));
@@ -363,6 +368,27 @@ export default function AdminProductsPage() {
                     className="bg-background text-foreground"
                   >
                     {cat}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Material</Label>
+              <select
+                value={productForm.material}
+                onChange={(e) =>
+                  setProductForm({ ...productForm, material: e.target.value })
+                }
+                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:border-ring text-foreground"
+              >
+                {materials.map((mat) => (
+                  <option
+                    key={mat}
+                    value={mat}
+                    className="bg-background text-foreground"
+                  >
+                    {mat}
                   </option>
                 ))}
               </select>

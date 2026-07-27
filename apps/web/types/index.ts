@@ -21,6 +21,7 @@ export interface Product {
   id: string;
   name: string;
   category: "TAZA" | "PLAYERA" | "HOODIE" | "OTRO";
+  material?: "ALGODON" | "POLIESTER" | "CERAMICA" | "ALUMINIO" | "OTRO" | null;
   description: string;
   image_url?: string;
   public_id?: string;
