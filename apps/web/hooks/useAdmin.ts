@@ -129,19 +129,15 @@ export function useCreateVariant() {
   return useMutation({
     mutationFn: async ({
       productId,
-      data,
+      formData,
     }: {
       productId: string;
-      data: {
-        size: string;
-        color: string;
-        stock: number;
-        base_price: number;
-      };
+      formData: FormData;
     }) => {
       const { data: res } = await api.post(
         `/products/${productId}/variants`,
-        data,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } },
       );
       return res;
     },
@@ -158,21 +154,16 @@ export function useUpdateVariant() {
     mutationFn: async ({
       productId,
       variantId,
-      data,
+      formData,
     }: {
       productId: string;
       variantId: string;
-      data: {
-        size?: string;
-        color?: string;
-        stock?: number;
-        base_price?: number;
-        active?: boolean;
-      };
+      formData: FormData;
     }) => {
       const { data: res } = await api.patch(
         `/products/${productId}/variants/${variantId}`,
-        data,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } },
       );
       return res;
     },

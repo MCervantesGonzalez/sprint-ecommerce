@@ -54,4 +54,10 @@ export class ProductVariant {
 
   @Column({ default: true })
   active!: boolean;
+
+  @Column({ nullable: true })
+  image_url!: string;
+
+  @Column({ nullable: true })
+  public_id!: string;
 }

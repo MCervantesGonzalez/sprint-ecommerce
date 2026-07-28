@@ -110,6 +110,7 @@ export class ProductsService {
   async createVariant(
     productId: string,
     dto: CreateVariantDto,
+    file?: Express.Multer.File,
   ): Promise<ProductVariant> {
     // Verificamos que el producto existe antes de crearlo
     const product = await this.findOne(productId);
@@ -119,6 +120,12 @@ export class ProductsService {
       product,
     });
 
+    if (file) {
+      const uploaded = await this.storageService.uploadImage(file, 'variants');
+      variant.image_url = uploaded.secure_url;
+      variant.public_id = uploaded.public_id;
+    }
+
     return this.variantRepository.save(variant);
   }
 
@@ -126,8 +133,19 @@ export class ProductsService {
     productId: string,
     variantId: string,
     dto: UpdateVariantDto,
+    file?: Express.Multer.File,
   ): Promise<ProductVariant> {
     const variant = await this.findVariant(productId, variantId);
+
+    if (file) {
+      if (variant.public_id) {
+        await this.storageService.deleteImage(variant.public_id);
+      }
+      const uploaded = await this.storageService.uploadImage(file, 'variants');
+      variant.image_url = uploaded.secure_url;
+      variant.public_id = uploaded.public_id;
+    }
+
     Object.assign(variant, dto);
     return this.variantRepository.save(variant);
   }

@@ -43,14 +43,17 @@ export function ProductCard({ product, onQuickView }: ProductCardProps) {
 
   const totalStock = product.variants.reduce((sum, v) => sum + v.stock, 0);
 
+  const displayImage =
+    activeVariants.find((v) => v.image_url)?.image_url ?? product.image_url;
+
   return (
     <Card className="flex flex-col hover:shadow-lg transition-shadow group">
       <CardContent className="pt-4 sm:pt-6 flex-1">
         {/* Imagen con botón de vista rápida */}
         <div className="w-full aspect-square bg-gray-100 rounded-md flex items-center justify-center mb-4 overflow-hidden relative">
-          {product.image_url ? (
+          {displayImage ? (
             <Image
-              src={product.image_url}
+              src={displayImage}
               alt={product.name}
               fill
               className="object-cover"

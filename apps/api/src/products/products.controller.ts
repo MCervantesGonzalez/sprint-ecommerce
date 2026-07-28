@@ -174,20 +174,61 @@ export class ProductsController {
   @Post(':id/variants')
   @ApiOperation({ summary: 'Agregar variante a producto (ADMIN)' })
   @ApiResponse({ status: 201, description: 'Variante creada' })
-  createVariant(@Param('id') productId: string, @Body() dto: CreateVariantDto) {
-    return this.productsService.createVariant(productId, dto);
+  @UseInterceptors(
+    FileInterceptor('image', { storage: multer.memoryStorage() }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        size: { type: 'string' },
+        color: { type: 'string' },
+        stock: { type: 'number' },
+        base_price: { type: 'number' },
+        compare_price: { type: 'number' },
+        active: { type: 'boolean' },
+        image: { type: 'string', format: 'binary' },
+      },
+    },
+  })
+  createVariant(
+    @Param('id') productId: string,
+    @Body() dto: CreateVariantDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    return this.productsService.createVariant(productId, dto, file);
   }
 
   @Roles(Role.ADMIN)
   @Patch(':id/variants/:variantId')
   @ApiOperation({ summary: 'Actualizar variante (ADMIN)' })
   @ApiResponse({ status: 200, description: 'Variante actualizada' })
+  @UseInterceptors(
+    FileInterceptor('image', { storage: multer.memoryStorage() }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        size: { type: 'string' },
+        color: { type: 'string' },
+        stock: { type: 'number' },
+        base_price: { type: 'number' },
+        compare_price: { type: 'number' },
+        active: { type: 'boolean' },
+        image: { type: 'string', format: 'binary' },
+      },
+    },
+  })
   updateVariant(
     @Param('id') productId: string,
     @Param('variantId') variantId: string,
     @Body() dto: UpdateVariantDto,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
-    return this.productsService.updateVariant(productId, variantId, dto);
+    return this.productsService.updateVariant(productId, variantId, dto, file);
   }
 
   @Roles(Role.ADMIN)
