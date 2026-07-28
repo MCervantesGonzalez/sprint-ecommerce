@@ -32,6 +32,12 @@ export class User {
   @Column({ nullable: true })
   avatar_public_id!: string;
 
+  @Column({ nullable: true })
+  reset_token!: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  reset_token_expires!: Date;
+
   @CreateDateColumn()
   created_at!: Date;
 }

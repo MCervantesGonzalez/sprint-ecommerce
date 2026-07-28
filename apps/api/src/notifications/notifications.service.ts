@@ -92,4 +92,20 @@ export class NotificationsService {
 
     this.logger.log(`Email de envío notificado a ${email}`);
   }
+
+  async sendPasswordReset(email: string, resetUrl: string): Promise<void> {
+    await this.transporter.sendMail({
+      from: this.config.get<string>('MAIL_FROM'),
+      to: email,
+      subject: 'Recupera tu contraseña',
+      html: `
+        <h2>Recupera tu contraseña</h2>
+        <p>Recibimos una solicitud para restablecer tu contraseña.</p>
+        <p>Haz clic en el siguiente enlace para crear una nueva (válido por 1 hora):</p>
+        <p><a href="${resetUrl}">${resetUrl}</a></p>
+        <p>Si no solicitaste esto, puedes ignorar este correo.</p>
+      `,
+    });
+    this.logger.log(`Email de recuperación de contraseña enviado a ${email}`);
+  }
 }

@@ -59,4 +59,32 @@ export class UsersService {
     const user = this.userRepository.create(data);
     return this.userRepository.save(user);
   }
+
+  async setResetToken(
+    userId: string,
+    token: string,
+    expires: Date,
+  ): Promise<void> {
+    await this.userRepository.update(userId, {
+      reset_token: token,
+      reset_token_expires: expires,
+    });
+  }
+
+  async findByResetToken(token: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { reset_token: token } });
+  }
+
+  async resetPassword(userId: string, password_hash: string): Promise<void> {
+    await this.userRepository
+      .createQueryBuilder()
+      .update(User)
+      .set({
+        password_hash,
+        reset_token: () => 'NULL',
+        reset_token_expires: () => 'NULL',
+      })
+      .where('id = :userId', { userId })
+      .execute();
+  }
 }
