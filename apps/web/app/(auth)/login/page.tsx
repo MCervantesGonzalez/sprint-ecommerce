@@ -113,6 +113,12 @@ export default function LoginPage() {
                   {errors.password.message}
                 </p>
               )}
+              <Link
+                href="/forgot-password"
+                className="block text-xs sm:text-sm text-primary hover:underline text-right"
+              >
+                ¿Olvidaste tu contraseña?
+              </Link>
             </div>
           </CardContent>
 
