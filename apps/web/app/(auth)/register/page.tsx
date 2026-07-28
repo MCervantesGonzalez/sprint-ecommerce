@@ -23,7 +23,12 @@ import {
 const registerSchema = z.object({
   name: z.string().min(2, "Mínimo 2 caracteres"),
   email: z.string().email("Email inválido"),
-  password: z.string().min(8, "Mínimo 8 caracteres"),
+  password: z
+    .string()
+    .min(8, "Mínimo 8 caracteres")
+    .regex(/[A-Z]/, "Debe incluir al menos una mayúscula")
+    .regex(/[a-z]/, "Debe incluir al menos una minúscula")
+    .regex(/[^A-Za-z0-9]/, "Debe incluir al menos un carácter especial"),
   phone: z.string().optional(),
 });
 
@@ -69,7 +74,7 @@ export default function RegisterPage() {
         </CardHeader>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <CardContent className="space-y-3 sm:space-y-4 px-4 sm:px-6">
+          <CardContent className="space-y-4 sm:space-y-5 px-4 sm:px-6 pb-2">
             {error && (
               <div className="p-2 sm:p-3 text-xs sm:text-sm text-red-600 bg-red-50 rounded-md border border-red-200">
                 {error}
@@ -118,9 +123,14 @@ export default function RegisterPage() {
                 className="text-sm sm:text-base h-9 sm:h-10"
                 {...register("password")}
               />
-              {errors.password && (
+              {errors.password ? (
                 <p className="text-xs text-red-500">
                   {errors.password.message}
+                </p>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Mínimo 8 caracteres, con mayúscula, minúscula y carácter
+                  especial
                 </p>
               )}
             </div>
@@ -138,7 +148,7 @@ export default function RegisterPage() {
             </div>
           </CardContent>
 
-          <CardFooter className="flex flex-col space-y-3 px-4 sm:px-6 pb-6 sm:pb-8">
+          <CardFooter className="flex flex-col space-y-3 px-4 sm:px-6 pt-4 sm:pt-5 pb-6 sm:pb-8 border-t border-border mt-2">
             <Button
               type="submit"
               className="w-full text-sm sm:text-base h-9 sm:h-10"
