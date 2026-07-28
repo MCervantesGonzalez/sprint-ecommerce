@@ -40,6 +40,8 @@ const categoryColors: Record<string, string> = {
 export default function AdminProductsPage() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [variantFile, setVariantFile] = useState<File | null>(null);
+  const [variantPreview, setVariantPreview] = useState<string | null>(null);
   const { data: products, isLoading } = useAdminProducts();
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
@@ -162,6 +164,13 @@ export default function AdminProductsPage() {
     setPreview(URL.createObjectURL(f));
   };
 
+  const handleVariantFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setVariantFile(f);
+    setVariantPreview(URL.createObjectURL(f));
+  };
+
   const openCreateVariant = (productId: string) => {
     setEditingVariant(null);
     setSelectedProductId(productId);
@@ -172,6 +181,8 @@ export default function AdminProductsPage() {
       base_price: 0,
       compare_price: 0,
     });
+    setVariantFile(null);
+    setVariantPreview(null);
     setShowVariantModal(true);
   };
 
@@ -185,6 +196,8 @@ export default function AdminProductsPage() {
       base_price: variant.base_price,
       compare_price: variant.compare_price ?? 0,
     });
+    setVariantFile(null);
+    setVariantPreview(null);
     setShowVariantModal(true);
   };
 
@@ -207,25 +220,26 @@ export default function AdminProductsPage() {
   };
 
   const handleVariantSubmit = async () => {
-    const data = {
-      size: variantForm.size,
-      color: variantForm.color,
-      stock: variantForm.stock,
-      base_price: variantForm.base_price,
-      compare_price:
-        variantForm.compare_price > 0 ? variantForm.compare_price : null,
-    };
+    const formData = new FormData();
+    formData.append("size", variantForm.size);
+    formData.append("color", variantForm.color);
+    formData.append("stock", String(variantForm.stock));
+    formData.append("base_price", String(variantForm.base_price));
+    if (variantForm.compare_price > 0) {
+      formData.append("compare_price", String(variantForm.compare_price));
+    }
+    if (variantFile) formData.append("image", variantFile);
 
     if (editingVariant) {
       await updateVariant.mutateAsync({
         productId: selectedProductId,
         variantId: editingVariant.id,
-        data,
+        formData,
       });
     } else {
       await createVariant.mutateAsync({
         productId: selectedProductId,
-        data,
+        formData,
       });
     }
     setShowVariantModal(false);
@@ -241,14 +255,14 @@ export default function AdminProductsPage() {
     });
   };
 
-  const handleToggleVariant = async (
-    productId: string,
-    variant: ProductVariant,
-  ) => {
-    await updateVariant.mutateAsync({
+  const handleToggleVariant = (productId: string, variant: ProductVariant) => {
+    const formData = new FormData();
+    formData.append("active", String(!variant.active));
+
+    updateVariant.mutate({
       productId,
       variantId: variant.id,
-      data: { active: !variant.active },
+      formData,
     });
   };
 
@@ -604,6 +618,32 @@ export default function AdminProductsPage() {
                 }
                 placeholder="Ej: 200.00"
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label>
+                Imagen de la variante{" "}
+                <span className="text-xs text-muted-foreground">
+                  (opcional — si no subes una, se usa la imagen general del
+                  producto)
+                </span>
+              </Label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleVariantFileChange}
+                className="w-full text-xs sm:text-sm text-muted-foreground file:mr-2 sm:file:mr-4 file:py-1.5 sm:file:py-2 file:px-3 sm:file:px-4 file:rounded-lg file:border-0 file:text-xs sm:file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/80 cursor-pointer"
+              />
+              {variantPreview && (
+                <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-gray-100">
+                  <Image
+                    src={variantPreview}
+                    alt="Preview"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              )}
             </div>
             <Button
               className="w-full"

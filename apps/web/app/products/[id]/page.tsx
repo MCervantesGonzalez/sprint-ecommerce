@@ -47,6 +47,8 @@ export default function ProductPage() {
     ? selectedVariant.base_price + (selectedDesign?.extra_price ?? 0)
     : null;
 
+  const displayImage = selectedVariant?.image_url ?? product?.image_url;
+
   if (loadingProduct) {
     return (
       <div className="space-y-4 sm:space-y-6 px-3 sm:px-0">
@@ -92,10 +94,14 @@ export default function ProductPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
         {/* Imagen */}
         <div className="max-w-96 aspect-square bg-gray-100 rounded-xl overflow-hidden relative">
-          {product.image_url ? (
+          {displayImage ? (
             <Image
-              src={product.image_url}
-              alt={product.name}
+              src={displayImage}
+              alt={
+                selectedVariant
+                  ? `${product.name} — ${selectedVariant.color}`
+                  : product.name
+              }
               fill
               className="object-contain p-6"
             />
@@ -148,13 +154,25 @@ export default function ProductPage() {
                       e.key === "Enter" && setSelectedVariant(variant)
                     }
                   >
-                    <div className="space-y-1">
-                      <p className="font-medium">
-                        {variant.color} — {variant.size}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Stock: {variant.stock}
-                      </p>
+                    <div className="flex items-center gap-3">
+                      {variant.image_url && (
+                        <div className="relative h-10 w-10 rounded-md overflow-hidden bg-gray-100 flex-shrink-0">
+                          <Image
+                            src={variant.image_url}
+                            alt={variant.color}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="space-y-1">
+                        <p className="font-medium">
+                          {variant.color} — {variant.size}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Stock: {variant.stock}
+                        </p>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
                       {variant.compare_price &&

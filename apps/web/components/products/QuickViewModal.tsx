@@ -39,6 +39,8 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
     ? selectedVariant.base_price + (selectedDesign?.extra_price ?? 0)
     : null;
 
+  const displayImage = selectedVariant?.image_url ?? product?.image_url;
+
   const handleAddToCart = () => {
     if (!isAuthenticated) {
       onClose();
@@ -66,10 +68,14 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Imagen */}
           <div className="relative w-full aspect-square bg-gray-100 rounded-xl overflow-hidden">
-            {product.image_url ? (
+            {displayImage ? (
               <Image
-                src={product.image_url}
-                alt={product.name}
+                src={displayImage}
+                alt={
+                  selectedVariant
+                    ? `${product.name} — ${selectedVariant.color}`
+                    : product.name
+                }
                 fill
                 className="object-contain p-4"
               />
@@ -115,7 +121,17 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
                         e.key === "Enter" && setSelectedVariant(variant)
                       }
                     >
-                      <span className="text-sm">
+                      <span className="text-sm flex items-center gap-2">
+                        {variant.image_url && (
+                          <span className="relative h-8 w-8 rounded-md overflow-hidden bg-gray-100 flex-shrink-0 block">
+                            <Image
+                              src={variant.image_url}
+                              alt={variant.color}
+                              fill
+                              className="object-cover"
+                            />
+                          </span>
+                        )}
                         {variant.color} — {variant.size}
                       </span>
                       <div className="flex items-center gap-2">

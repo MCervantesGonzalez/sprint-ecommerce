@@ -27,6 +27,7 @@ export interface ProductVariant {
   base_price: number;
   compare_price?: number | null;
   active: boolean;
+  image_url?: string | null;
 }
 
 export interface Product {
