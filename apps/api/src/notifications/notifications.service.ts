@@ -108,4 +108,19 @@ export class NotificationsService {
     });
     this.logger.log(`Email de recuperación de contraseña enviado a ${email}`);
   }
+
+  async sendEmailVerification(email: string, verifyUrl: string): Promise<void> {
+    await this.transporter.sendMail({
+      from: this.config.get<string>('MAIL_FROM'),
+      to: email,
+      subject: 'Confirma tu correo — Sprint Custom',
+      html: `
+        <h2>¡Bienvenido a Sprint Custom!</h2>
+        <p>Confirma tu correo para activar todos los beneficios de tu cuenta.</p>
+        <p><a href="${verifyUrl}">${verifyUrl}</a></p>
+        <p>Si no creaste esta cuenta, puedes ignorar este correo.</p>
+      `,
+    });
+    this.logger.log(`Email de verificación enviado a ${email}`);
+  }
 }

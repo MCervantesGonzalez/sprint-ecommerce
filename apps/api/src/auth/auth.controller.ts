@@ -6,7 +6,10 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { VerifyEmailDto } from './dto/verify-email.dto';
 import { Public } from '../common/decorators/public.decorator';
+import { UseGuards, Req } from '@nestjs/common';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -55,5 +58,25 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Token inválido o expirado' })
   resetPassword(@Body() dto: ResetPasswordDto) {
     return this.authService.resetPassword(dto);
+  }
+
+  @Public()
+  @Post('verify-email')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Verificar correo con token' })
+  @ApiResponse({ status: 200, description: 'Correo verificado' })
+  @ApiResponse({ status: 400, description: 'Token inválido o expirado' })
+  verifyEmail(@Body() dto: VerifyEmailDto) {
+    return this.authService.verifyEmail(dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Throttle({ default: { limit: 3, ttl: seconds(60) } })
+  @Post('resend-verification')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Reenviar correo de verificación' })
+  @ApiResponse({ status: 200, description: 'Correo reenviado' })
+  resendVerification(@Req() req: any) {
+    return this.authService.resendVerification(req.user.id);
   }
 }
