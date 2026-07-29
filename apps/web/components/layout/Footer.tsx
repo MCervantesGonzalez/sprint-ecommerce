@@ -66,14 +66,6 @@ export function Footer() {
                   Diseños
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/new"
-                  className="text-xs sm:text-sm text-muted-foreground hover:text-foreground"
-                >
-                  Novedades
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -157,11 +149,19 @@ export function Footer() {
         </div>
 
         {/* Barra inferior de Copyright */}
-        <div className="border-t mt-6 sm:mt-12 pt-4 sm:pt-8 flex flex-col md:flex-row justify-between items-center gap-2 sm:gap-4">
-          <p className="text-xs text-muted-foreground text-center md:text-left">
+        <div className="border-t mt-6 sm:mt-12 pt-4 sm:pt-8 flex flex-col md:flex-row items-center justify-center md:justify-start gap-1.5 md:gap-3 text-center md:text-left">
+          <p className="text-xs text-muted-foreground">
             © {currentYear} Sprint. Todos los derechos reservados.
           </p>
-          <div className="flex gap-6"></div>
+          <span className="hidden md:inline text-muted-foreground text-xs">
+            ·
+          </span>
+          <Link
+            href="/privacy"
+            className="text-xs text-muted-foreground hover:text-foreground"
+          >
+            Aviso de Privacidad
+          </Link>
         </div>
       </div>
     </footer>
