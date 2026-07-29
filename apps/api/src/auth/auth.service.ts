@@ -13,6 +13,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { VerifyEmailDto } from './dto/verify-email.dto';
 import { User } from '../users/user.entity';
 
 @Injectable()
@@ -33,6 +34,25 @@ export class AuthService {
       password_hash,
       phone: dto.phone,
     });
+
+    // Generar y enviar token de verificación (no bloquea el registro si falla el correo)
+    const token = crypto.randomBytes(32).toString('hex');
+    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 horas
+
+    await this.usersService.setVerifyToken(user.id, token, expires);
+
+    const frontendUrl = this.config.get<string>('FRONTEND_URL');
+    const verifyUrl = `${frontendUrl}/verify-email?token=${token}`;
+
+    try {
+      await this.notificationsService.sendEmailVerification(
+        user.email,
+        verifyUrl,
+      );
+    } catch (err) {
+      // Si falla el envío del correo, no bloqueamos el registro —
+      // el usuario puede pedir que se reenvíe después
+    }
 
     return this.buildResponse(user);
   }
@@ -105,7 +125,45 @@ export class AuthService {
         name: user.name,
         email: user.email,
         role: user.role,
+        email_verified: user.email_verified,
       },
     };
+  }
+
+  async verifyEmail(dto: VerifyEmailDto): Promise<{ message: string }> {
+    const user = await this.usersService.findByVerifyToken(dto.token);
+
+    if (!user || !user.verify_token_expires) {
+      throw new BadRequestException('Token inválido o expirado');
+    }
+
+    if (user.verify_token_expires.getTime() < Date.now()) {
+      throw new BadRequestException('Token inválido o expirado');
+    }
+
+    await this.usersService.verifyEmail(user.id);
+
+    return { message: 'Correo verificado correctamente' };
+  }
+
+  async resendVerification(userId: string): Promise<{ message: string }> {
+    const user = await this.usersService.findById(userId);
+    if (!user) throw new BadRequestException('Usuario no encontrado');
+    if (user.email_verified) {
+      return { message: 'Tu correo ya está verificado' };
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    await this.usersService.setVerifyToken(user.id, token, expires);
+
+    const frontendUrl = this.config.get<string>('FRONTEND_URL');
+    const verifyUrl = `${frontendUrl}/verify-email?token=${token}`;
+    await this.notificationsService.sendEmailVerification(
+      user.email,
+      verifyUrl,
+    );
+
+    return { message: 'Correo de verificación reenviado' };
   }
 }

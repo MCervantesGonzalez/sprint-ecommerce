@@ -5,6 +5,7 @@ export interface User {
   role: "ADMIN" | "CLIENT";
   phone?: string;
   avatar_url?: string;
+  email_verified?: boolean;
 }
 
 export interface Address {

@@ -87,4 +87,32 @@ export class UsersService {
       .where('id = :userId', { userId })
       .execute();
   }
+
+  async setVerifyToken(
+    userId: string,
+    token: string,
+    expires: Date,
+  ): Promise<void> {
+    await this.userRepository.update(userId, {
+      verify_token: token,
+      verify_token_expires: expires,
+    });
+  }
+
+  async findByVerifyToken(token: string): Promise<User | null> {
+    return this.userRepository.findOne({ where: { verify_token: token } });
+  }
+
+  async verifyEmail(userId: string): Promise<void> {
+    await this.userRepository
+      .createQueryBuilder()
+      .update(User)
+      .set({
+        email_verified: true,
+        verify_token: () => 'NULL',
+        verify_token_expires: () => 'NULL',
+      })
+      .where('id = :userId', { userId })
+      .execute();
+  }
 }

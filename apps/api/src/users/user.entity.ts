@@ -38,6 +38,15 @@ export class User {
   @Column({ type: 'timestamp', nullable: true })
   reset_token_expires!: Date;
 
+  @Column({ default: false })
+  email_verified!: boolean;
+
+  @Column({ nullable: true })
+  verify_token!: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  verify_token_expires!: Date;
+
   @CreateDateColumn()
   created_at!: Date;
 }
