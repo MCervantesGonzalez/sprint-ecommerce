@@ -24,9 +24,18 @@ export class Order {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, { onDelete: 'CASCADE', nullable: true })
   @JoinColumn({ name: 'user_id' })
-  user!: User;
+  user!: User | null;
+
+  @Column({ nullable: true })
+  guest_email!: string;
+
+  @Column({ nullable: true })
+  guest_name!: string;
+
+  @Column({ nullable: true })
+  guest_phone!: string;
 
   @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.PENDING })
   status!: OrderStatus;

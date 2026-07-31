@@ -99,6 +99,14 @@ export function Footer() {
                   Envíos y Devoluciones
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/track-order"
+                  className="text-xs sm:text-sm text-muted-foreground hover:text-foreground"
+                >
+                  Rastrear pedido
+                </Link>
+              </li>
             </ul>
           </div>
 

@@ -2,7 +2,6 @@
 
 import { useCartStore } from "@/store/cartStore";
 import { useCart, useRemoveCartItem, useUpdateCartItem } from "@/hooks/useCart";
-import { useAuthStore } from "@/store/authStore";
 import {
   Sheet,
   SheetContent,
@@ -17,7 +16,6 @@ import Image from "next/image";
 
 export function CartDrawer() {
   const { isOpen, closeCart } = useCartStore();
-  const { isAuthenticated } = useAuthStore();
   const { data: cart, isLoading } = useCart();
   const removeItem = useRemoveCartItem();
   const updateItem = useUpdateCartItem();
@@ -29,18 +27,7 @@ export function CartDrawer() {
           <SheetTitle>Mi carrito</SheetTitle>
         </SheetHeader>
 
-        {/* No autenticado */}
-        {!isAuthenticated ? (
-          <div className="flex-1 flex flex-col items-center justify-center gap-4">
-            <ShoppingBag className="h-12 w-12 text-muted-foreground" />
-            <p className="text-muted-foreground text-center">
-              Inicia sesión para ver tu carrito
-            </p>
-            <Button asChild onClick={closeCart}>
-              <Link href="/login">Iniciar sesión</Link>
-            </Button>
-          </div>
-        ) : isLoading ? (
+        {isLoading ? (
           <div className="flex-1 space-y-4 py-4">
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="flex gap-3">

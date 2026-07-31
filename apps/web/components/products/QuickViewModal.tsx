@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useProductDesigns } from "@/hooks/useProducts";
 import { useAddToCart } from "@/hooks/useCart";
-import { useAuthStore } from "@/store/authStore";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +14,6 @@ import { Badge } from "../ui/badge";
 import { Product, ProductVariant, ProductDesign } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 interface QuickViewModalProps {
   product: Product | null;
@@ -23,8 +21,6 @@ interface QuickViewModalProps {
 }
 
 export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
-  const router = useRouter();
-  const { isAuthenticated } = useAuthStore();
   const { data: designs } = useProductDesigns(product?.id ?? "");
   const addToCart = useAddToCart();
 
@@ -42,16 +38,13 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
   const displayImage = selectedVariant?.image_url ?? product?.image_url;
 
   const handleAddToCart = () => {
-    if (!isAuthenticated) {
-      onClose();
-      router.push("/login");
-      return;
-    }
     if (!selectedVariant) return;
     addToCart.mutate({
       variantId: selectedVariant.id,
       designId: selectedDesign?.design.id,
       quantity: 1,
+      variant: selectedVariant,
+      design: selectedDesign?.design ?? null,
     });
     onClose();
   };

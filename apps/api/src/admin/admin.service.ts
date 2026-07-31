@@ -266,8 +266,8 @@ export class AdminService {
 
       return [
         order.id,
-        `"${order.user.name}"`,
-        order.user.email,
+        `"${order.user?.name ?? order.guest_name ?? 'Invitado'}"`,
+        order.user?.email ?? order.guest_email ?? '',
         order.status,
         order.total,
         `"${order.shipping_address}"`,

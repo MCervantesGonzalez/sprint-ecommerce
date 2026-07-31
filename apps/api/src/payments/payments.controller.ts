@@ -19,6 +19,7 @@ import {
 import { PaymentsService } from './payments.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Public } from '../common/decorators/public.decorator';
+import { CreateGuestPreferenceDto } from './dto/create-guest-preference.dto';
 
 @ApiTags('Payments')
 @ApiBearerAuth()
@@ -38,6 +39,25 @@ export class PaymentsController {
   @ApiResponse({ status: 404, description: 'Orden no encontrada' })
   createPreference(@Param('orderId') orderId: string, @Request() req: any) {
     return this.paymentsService.createPreference(orderId, req.user.id);
+  }
+
+  @Public()
+  @Post('create-guest-preference/:orderId')
+  @ApiOperation({
+    summary: 'Crear preferencia de pago para orden de invitado (sin JWT)',
+  })
+  @ApiParam({ name: 'orderId', description: 'UUID de la orden a pagar' })
+  @ApiResponse({
+    status: 201,
+    description: 'Retorna init_point para redirigir al checkout',
+  })
+  @ApiResponse({ status: 400, description: 'La orden ya fue procesada' })
+  @ApiResponse({ status: 404, description: 'Orden no encontrada' })
+  createGuestPreference(
+    @Param('orderId') orderId: string,
+    @Body() dto: CreateGuestPreferenceDto,
+  ) {
+    return this.paymentsService.createGuestPreference(orderId, dto.guest_email);
   }
 
   @Public()

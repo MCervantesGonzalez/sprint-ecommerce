@@ -1,14 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { Address } from "@/types";
+import { useAuthStore } from "@/store/authStore";
 
 export function useAddresses() {
+  const { isAuthenticated } = useAuthStore();
+
   return useQuery<Address[]>({
     queryKey: ["addresses"],
     queryFn: async () => {
       const { data } = await api.get("/addresses");
       return data;
     },
+    enabled: isAuthenticated,
   });
 }
 

@@ -4,22 +4,18 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 import { useProduct, useProductDesigns } from "@/hooks/useProducts";
 import { useAddToCart } from "@/hooks/useCart";
-import { useAuthStore } from "@/store/authStore";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductVariant, ProductDesign } from "@/types";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 export default function ProductPage() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
   const { data: product, isLoading: loadingProduct } = useProduct(id);
   const { data: designs, isLoading: loadingDesigns } = useProductDesigns(id);
   const addToCart = useAddToCart();
-  const { isAuthenticated } = useAuthStore();
 
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
     null,
@@ -29,17 +25,14 @@ export default function ProductPage() {
   );
 
   const handleAddToCart = () => {
-    if (!isAuthenticated) {
-      router.push("/login");
-      return;
-    }
-
     if (!selectedVariant) return;
 
     addToCart.mutate({
       variantId: selectedVariant.id,
       designId: selectedDesign?.design.id,
       quantity: 1,
+      variant: selectedVariant,
+      design: selectedDesign?.design ?? null,
     });
   };
 
@@ -223,11 +216,6 @@ export default function ProductPage() {
                   ? "Selecciona una variante"
                   : "Agregar al carrito"}
             </Button>
-            {!isAuthenticated && (
-              <p className="text-xs text-center text-muted-foreground">
-                Necesitas iniciar sesión para agregar al carrito
-              </p>
-            )}
           </div>
         </div>
       </div>
