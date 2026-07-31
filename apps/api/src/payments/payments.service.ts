@@ -76,6 +76,57 @@ export class PaymentsService {
     return { init_point: response.init_point! };
   }
 
+  async createGuestPreference(
+    orderId: string,
+    guestEmail: string,
+  ): Promise<{ init_point: string }> {
+    const order = await this.orderRepository.findOne({
+      where: { id: orderId },
+      relations: ['items'],
+    });
+
+    if (!order) throw new NotFoundException('Orden no encontrada');
+
+    // Solo órdenes de invitado, y el email debe coincidir
+    if (
+      order.user ||
+      order.guest_email?.toLowerCase() !== guestEmail.toLowerCase()
+    ) {
+      throw new NotFoundException('Orden no encontrada');
+    }
+
+    if (order.status !== OrderStatus.PENDING) {
+      throw new BadRequestException('La orden ya fue procesada');
+    }
+
+    const items = order.items.map((item) => ({
+      id: item.id,
+      title: item.snapshot_name,
+      quantity: item.quantity,
+      unit_price: Number(item.unit_price),
+      currency_id: 'MXN',
+    }));
+
+    const preference = new Preference(this.mpClient);
+    const response = await preference.create({
+      body: {
+        items,
+        external_reference: orderId,
+        back_urls: {
+          success: `${this.config.get('FRONTEND_URL')}/track-order?orderId=${orderId}&email=${encodeURIComponent(guestEmail)}&status=success`,
+          pending: `${this.config.get('FRONTEND_URL')}/track-order?orderId=${orderId}&email=${encodeURIComponent(guestEmail)}&status=pending`,
+          failure: `${this.config.get('FRONTEND_URL')}/track-order?orderId=${orderId}&email=${encodeURIComponent(guestEmail)}&status=failure`,
+        },
+        notification_url: `${this.config.get('BACKEND_URL')}/api/payments/webhook`,
+      },
+    });
+
+    order.mp_preference_id = response.id!;
+    await this.orderRepository.save(order);
+
+    return { init_point: response.init_point! };
+  }
+
   // WEBHOOK
 
   async handleWebhook(body: any): Promise<void> {
@@ -111,9 +162,14 @@ export class PaymentsService {
       relations: ['user', 'items'],
     });
 
-    await this.notificationsService.sendPaymentConfirmation(
-      orderWithUser!,
-      orderWithUser!.user.email,
-    );
+    const paymentEmail =
+      orderWithUser!.user?.email ?? orderWithUser!.guest_email;
+
+    if (paymentEmail) {
+      await this.notificationsService.sendPaymentConfirmation(
+        orderWithUser!,
+        paymentEmail,
+      );
+    }
   }
 }

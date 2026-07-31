@@ -56,6 +56,8 @@ export class NotificationsService {
         </table>
         <p><strong>Total: $${order.total}</strong></p>
         <p><strong>Dirección de envío:</strong> ${order.shipping_address}</p>
+        <p><strong>Número de orden:</strong> ${order.id}</p>
+        <p style="color: #666; font-size: 13px;">Guarda este número — lo necesitarás junto con tu correo para rastrear tu pedido en nuestro sitio.</p>
         <p>Te notificaremos cuando tu pedido sea enviado.</p>
       `,
     });
