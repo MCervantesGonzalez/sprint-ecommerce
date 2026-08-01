@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { ProductList } from "@/components/products/ProductList";
 
 export default function CatalogoPage() {
@@ -11,7 +12,13 @@ export default function CatalogoPage() {
           Todos nuestros productos personalizados
         </p>
       </div>
-      <ProductList />
+      <Suspense
+        fallback={
+          <div className="text-muted-foreground">Cargando catálogo...</div>
+        }
+      >
+        <ProductList />
+      </Suspense>
     </div>
   );
 }

@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -31,7 +30,7 @@ const resetPasswordSchema = z.object({
 
 type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -60,10 +59,14 @@ export default function ResetPasswordPage() {
       });
       setSuccess(true);
       setTimeout(() => router.push("/login"), 2000);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error && "response" in err
+          ? (err as { response?: { data?: { message?: string } } }).response
+              ?.data?.message
+          : undefined;
       setError(
-        err.response?.data?.message ||
-          "El enlace expiró o no es válido. Solicita uno nuevo.",
+        message || "El enlace expiró o no es válido. Solicita uno nuevo.",
       );
     }
   };
@@ -91,12 +94,6 @@ export default function ResetPasswordPage() {
             <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl text-center">
               Este enlace no es válido. Solicita uno nuevo.
             </div>
-            <Link
-              href="/forgot-password"
-              className="block text-center text-sm text-primary hover:underline"
-            >
-              Solicitar nuevo enlace
-            </Link>
           </CardContent>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -144,5 +141,13 @@ export default function ResetPasswordPage() {
         )}
       </Card>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[80vh]" />}>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }

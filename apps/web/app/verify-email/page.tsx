@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
@@ -8,7 +8,7 @@ import { api } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const queryClient = useQueryClient();
@@ -30,14 +30,16 @@ export default function VerifyEmailPage() {
       .then(() => {
         setStatus("success");
         setMessage("Tu correo fue verificado correctamente.");
-        // Refresca el perfil para que el banner desaparezca sin recargar
         queryClient.invalidateQueries({ queryKey: ["profile"] });
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
+        const message =
+          err instanceof Error && "response" in err
+            ? (err as { response?: { data?: { message?: string } } }).response
+                ?.data?.message
+            : undefined;
         setStatus("error");
-        setMessage(
-          err.response?.data?.message || "El enlace expiró o no es válido.",
-        );
+        setMessage(message || "El enlace expiró o no es válido.");
       });
   }, [token, queryClient]);
 
@@ -71,5 +73,13 @@ export default function VerifyEmailPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[80vh]" />}>
+      <VerifyEmailContent />
+    </Suspense>
   );
 }
