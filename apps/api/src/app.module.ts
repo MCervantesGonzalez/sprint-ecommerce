@@ -37,8 +37,16 @@ import { AddressesModule } from './addresses/addresses.module';
         username: config.get('DB_USER'),
         password: config.get('DB_PASSWORD'),
         database: config.get('DB_NAME'),
+
+        ssl:
+          config.get('DB_SSL') === 'true'
+            ? { rejectUnauthorized: false }
+            : false,
+
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
+
         synchronize: config.get('NODE_ENV') !== 'production',
+
         logging: config.get('NODE_ENV') === 'development',
       }),
     }),

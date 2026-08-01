@@ -18,7 +18,7 @@ async function bootstrap() {
   );
 
   // Swagger solo en desarrollo
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.ENABLE_SWAGGER === 'true') {
     const config = new DocumentBuilder()
       .setTitle('Ecommerce API')
       .setDescription('API para tienda de productos personalizados')
