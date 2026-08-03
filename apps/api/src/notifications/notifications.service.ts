@@ -17,6 +17,11 @@ export class NotificationsService {
         user: this.config.get<string>('MAIL_USER'),
         pass: this.config.get<string>('MAIL_PASS'),
       },
+      // Render suele enrutar salidas por IPv6 primero, y Gmail a veces
+      // no responde bien por esa vía — forzamos IPv4 para evitar el
+      // ETIMEDOUT que vimos en producción.
+      family: 4,
+      connectionTimeout: 10000,
     });
   }
 
