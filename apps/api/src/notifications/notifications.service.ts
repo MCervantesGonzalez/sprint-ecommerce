@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
+import type SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { Order } from '../orders/entities/order.entity';
 
 @Injectable()
@@ -9,7 +10,7 @@ export class NotificationsService {
   private readonly logger = new Logger(NotificationsService.name);
 
   constructor(private readonly config: ConfigService) {
-    this.transporter = nodemailer.createTransport({
+    const transportOptions: SMTPTransport.Options & { family?: number } = {
       host: this.config.get<string>('MAIL_HOST'),
       port: this.config.get<number>('MAIL_PORT'),
       secure: false, // TLS
@@ -22,7 +23,9 @@ export class NotificationsService {
       // ETIMEDOUT que vimos en producción.
       family: 4,
       connectionTimeout: 10000,
-    });
+    };
+
+    this.transporter = nodemailer.createTransport(transportOptions);
   }
 
   async sendOrderConfirmation(order: Order, email: string): Promise<void> {
