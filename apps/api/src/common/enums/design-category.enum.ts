@@ -1,0 +1,10 @@
+export enum DesignCategory {
+  POKEMON = 'POKEMON',
+  HELLOKITTY = 'HELLOKITTY',
+  MUSICA = 'MUSICA',
+  YOGA = 'YOGA',
+  ANIME = 'ANIME',
+  MINIMALISTA = 'MINIMALISTA',
+  FLORAL = 'FLORAL',
+  OTRO = 'OTRO',
+}

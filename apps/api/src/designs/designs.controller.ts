@@ -1,0 +1,186 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  HttpCode,
+  HttpStatus,
+  ParseFilePipe,
+  FileTypeValidator,
+  MaxFileSizeValidator,
+  BadRequestException,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiBody,
+} from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { DesignsService } from './designs.service';
+import { CreateDesignDto } from './dto/create-design.dto';
+import { UpdateDesignDto } from './dto/update-design.dto';
+import { AssignDesignDto } from './dto/assign-design.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
+import { Public } from '../common/decorators/public.decorator';
+import { Role } from '../common/enums/role.enum';
+import multer from 'multer';
+
+@ApiTags('Designs')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Controller('designs')
+export class DesignsController {
+  constructor(private readonly designsService: DesignsService) {}
+
+  // DESIGNS
+
+  @Public()
+  @Get()
+  @ApiOperation({ summary: 'Listar todos los diseños activos' })
+  @ApiResponse({ status: 200, description: 'Lista de diseños' })
+  findAll() {
+    return this.designsService.findAll();
+  }
+
+  @Public()
+  @Get(':id')
+  @ApiOperation({ summary: 'Obtener un diseño por ID' })
+  @ApiResponse({ status: 200, description: 'Diseño encontrado' })
+  @ApiResponse({ status: 404, description: 'Diseño no encontrado' })
+  findOne(@Param('id') id: string) {
+    return this.designsService.findOne(id);
+  }
+
+  @Roles(Role.ADMIN)
+  @Post()
+  @UseInterceptors(
+    FileInterceptor('image', { storage: multer.memoryStorage() }),
+  )
+  @ApiOperation({ summary: 'Crear diseño con imagen (ADMIN)' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', example: 'Diseño Floral' },
+        description: { type: 'string', example: 'Patrón floral minimalista' },
+        image: {
+          type: 'string',
+          format: 'binary',
+          description: 'Solo JPG, PNG o WEBP. Tamaño máximo: 5MB',
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 201, description: 'Diseño creado' })
+  @ApiResponse({ status: 400, description: 'Imagen o datos inválidos' })
+  create(
+    @Body() dto: CreateDesignDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new FileTypeValidator({ fileType: /(jpg|jpeg|png|webp)$/i }),
+          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }),
+        ],
+        exceptionFactory: (err: any) =>
+          new BadRequestException(err?.message ?? 'Imagen inválida'),
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    return this.designsService.create(dto, file);
+  }
+
+  @Roles(Role.ADMIN)
+  @Patch(':id')
+  @UseInterceptors(
+    FileInterceptor('image', { storage: multer.memoryStorage() }),
+  )
+  @ApiOperation({ summary: 'Actualizar diseño (ADMIN)' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        description: { type: 'string' },
+        active: { type: 'boolean' },
+        image: { type: 'string', format: 'binary' },
+      },
+    },
+  })
+  @ApiResponse({ status: 200, description: 'Diseño actualizado' })
+  @ApiResponse({ status: 400, description: 'Imagen o datos inválidos' })
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateDesignDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new FileTypeValidator({ fileType: /(jpg|jpeg|png|webp)$/i }),
+          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }),
+        ],
+        exceptionFactory: (err: any) =>
+          new BadRequestException(
+            typeof err === 'string' ? err : (err?.message ?? 'Imagen inválida'),
+          ),
+      }),
+    )
+    file?: Express.Multer.File,
+  ) {
+    return this.designsService.update(id, dto, file);
+  }
+
+  @Roles(Role.ADMIN)
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Desactivar diseño (ADMIN)' })
+  @ApiResponse({ status: 204, description: 'Diseño desactivado' })
+  remove(@Param('id') id: string) {
+    return this.designsService.remove(id);
+  }
+
+  // PRODUCTS DESIGNS
+
+  @Public()
+  @Get('product/:productId')
+  @ApiOperation({ summary: 'Ver diseños disponibles para un producto' })
+  @ApiResponse({ status: 200, description: 'Lista de diseños con extra_price' })
+  findProductsDesigns(@Param('productId') productId: string) {
+    return this.designsService.findProductDesigns(productId);
+  }
+
+  @Roles(Role.ADMIN)
+  @Post('product/:productId')
+  @ApiOperation({ summary: 'Asignar diseño a producto (ADMIN)' })
+  @ApiResponse({ status: 201, description: 'Diseño asignado' })
+  assignToProduct(
+    @Param('productId') productId: string,
+    @Body() dto: AssignDesignDto,
+  ) {
+    return this.designsService.assignToProduct(productId, dto);
+  }
+
+  @Roles(Role.ADMIN)
+  @Delete('product/:productId/design/:designId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Remover diseño de producto (ADMIN)' })
+  @ApiResponse({ status: 204, description: 'Asignación eliminada' })
+  removeProductDesign(
+    @Param('productId') productId: string,
+    @Param('designId') designId: string,
+  ) {
+    return this.designsService.removeProductDesign(productId, designId);
+  }
+}

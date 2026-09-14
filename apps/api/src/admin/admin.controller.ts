@@ -1,0 +1,141 @@
+import {
+  Controller,
+  Get,
+  Query,
+  UseGuards,
+  Res,
+  Patch,
+  Param,
+  Body,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiTags,
+  ApiQuery,
+  ApiResponse,
+  ApiConsumes,
+} from '@nestjs/swagger';
+import { AdminService } from './admin.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
+import { Role } from '../common/enums/role.enum';
+import {
+  AdminOrdersQueryDto,
+  LowStockQueryDto,
+  ExportOrdersQueryDto,
+} from './dto/admin-query.dto';
+import { OrderStatus } from '../orders/entities/order.entity';
+import type { Response } from 'express';
+import { UseInterceptors, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+
+@ApiTags('Admin')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.ADMIN)
+@Controller('admin')
+export class AdminController {
+  constructor(private readonly adminService: AdminService) {}
+
+  @Get('dashboard')
+  @ApiOperation({ summary: 'Métricas generales del panel admin' })
+  getDashboard() {
+    return this.adminService.getDashboard();
+  }
+
+  @Get('orders')
+  @ApiOperation({ summary: 'Órdenes con filtros y paginación' })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    enum: OrderStatus,
+  })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  getOrders(@Query() query: AdminOrdersQueryDto) {
+    return this.adminService.getOrders(query);
+  }
+
+  @Roles(Role.ADMIN)
+  @Get('products')
+  @ApiOperation({
+    summary: 'Listar todos los productos incluyendo inactivos (ADMIN)',
+  })
+  @ApiResponse({ status: 200, description: 'Lista completa de productos' })
+  getAllProducts() {
+    return this.adminService.getAllProducts();
+  }
+
+  @Roles(Role.ADMIN)
+  @Get('designs')
+  @ApiOperation({
+    summary: 'Listar todos los diseños incluyendo inactivos (ADMIN)',
+  })
+  @ApiResponse({ status: 200, description: 'Lista completa de diseños' })
+  getAllDesigns() {
+    return this.adminService.getAllDesigns();
+  }
+
+  @Roles(Role.ADMIN)
+  @Patch('designs/:id')
+  @ApiOperation({ summary: 'Actualizar diseño incluyendo inactivos (ADMIN)' })
+  updateDesign(@Param('id') id: string, @Body() body: any) {
+    return this.adminService.updateDesign(id, body);
+  }
+
+  @Roles(Role.ADMIN)
+  @Patch('products/:id')
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Actualizar producto incluyendo inactivos (ADMIN)' })
+  updateProduct(
+    @Param('id') id: string,
+    @Body() body: any,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    return this.adminService.updateProduct(id, body, file);
+  }
+
+  @Get('products/low-stock')
+  @ApiOperation({ summary: 'Variantes con stock bajo o igual al umbral' })
+  @ApiQuery({
+    name: 'threshold',
+    required: false,
+    type: Number,
+    description: 'Default: 5',
+  })
+  getLowStockProducts(@Query() query: LowStockQueryDto) {
+    return this.adminService.getLowStockProducts(query);
+  }
+
+  @Get('orders/export')
+  @ApiOperation({ summary: 'Exportar órdenes a CSV' })
+  @ApiQuery({ name: 'status', required: false, enum: OrderStatus })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    type: String,
+    example: '2026-01-01',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    type: String,
+    example: '2026-04-30',
+  })
+  @ApiResponse({ status: 200, description: 'Archivo CSV descargable' })
+  async exportOrders(
+    @Query() query: ExportOrdersQueryDto,
+    @Res() res: Response,
+  ) {
+    const csv = await this.adminService.exportOrdersCsv(query);
+
+    const filename = `orders-${new Date().toISOString().split('T')[0]}.csv`;
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(csv);
+  }
+}

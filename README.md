@@ -1,6 +1,6 @@
 # Sprint Ecommerce
 
-API REST para tienda online de productos personalizados (tazas, playeras, hoodies y más).
+Tienda online de productos personalizados (tazas, playeras, hoodies y más).
 Los clientes eligen un diseño del catálogo y lo aplican al producto de su elección.
 
 > Proyecto personal real — construido para digitalizar mi emprendimiento de productos personalizados.
@@ -159,6 +159,7 @@ Email de confirmación al cliente
 - En desarrollo se usa `synchronize: true` — TypeORM sincroniza las entidades automáticamente
 - En producción se generará la migración inicial con TypeORM CLI antes del deploy
 ```
+
 ## Autor
 
 **Miguel Angel Cervantes González**

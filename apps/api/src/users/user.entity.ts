@@ -1,0 +1,52 @@
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+} from 'typeorm';
+import { Role } from '../common/enums/role.enum';
+
+@Entity('users')
+export class User {
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
+
+  @Column()
+  name!: string;
+
+  @Column({ unique: true })
+  email!: string;
+
+  @Column()
+  password_hash!: string;
+
+  @Column({ type: 'enum', enum: Role, default: Role.CLIENT })
+  role!: Role;
+
+  @Column({ nullable: true })
+  phone!: string;
+
+  @Column({ nullable: true })
+  avatar_url!: string;
+
+  @Column({ nullable: true })
+  avatar_public_id!: string;
+
+  @Column({ nullable: true })
+  reset_token!: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  reset_token_expires!: Date;
+
+  @Column({ default: false })
+  email_verified!: boolean;
+
+  @Column({ nullable: true })
+  verify_token!: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  verify_token_expires!: Date;
+
+  @CreateDateColumn()
+  created_at!: Date;
+}

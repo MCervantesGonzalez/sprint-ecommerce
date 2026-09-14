@@ -1,0 +1,7 @@
+export enum Material {
+  ALGODON = 'ALGODON',
+  POLIESTER = 'POLIESTER',
+  CERAMICA = 'CERAMICA',
+  ALUMINIO = 'ALUMINIO',
+  OTRO = 'OTRO',
+}

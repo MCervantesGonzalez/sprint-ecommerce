@@ -1,0 +1,136 @@
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import * as nodemailer from 'nodemailer';
+import type SMTPTransport from 'nodemailer/lib/smtp-transport';
+import { Order } from '../orders/entities/order.entity';
+
+@Injectable()
+export class NotificationsService {
+  private transporter: nodemailer.Transporter;
+  private readonly logger = new Logger(NotificationsService.name);
+
+  constructor(private readonly config: ConfigService) {
+    const transportOptions: SMTPTransport.Options & { family?: number } = {
+      host: this.config.get<string>('MAIL_HOST'),
+      port: this.config.get<number>('MAIL_PORT'),
+      secure: false, // TLS
+      auth: {
+        user: this.config.get<string>('MAIL_USER'),
+        pass: this.config.get<string>('MAIL_PASS'),
+      },
+      // Render suele enrutar salidas por IPv6 primero, y Gmail a veces
+      // no responde bien por esa vía — forzamos IPv4 para evitar el
+      // ETIMEDOUT que vimos en producción.
+      family: 4,
+      connectionTimeout: 10000,
+    };
+
+    this.transporter = nodemailer.createTransport(transportOptions);
+  }
+
+  async sendOrderConfirmation(order: Order, email: string): Promise<void> {
+    const itemsList = order.items
+      .map(
+        (item) =>
+          `<tr>
+            <td>${item.snapshot_name}</td>
+            <td>${item.quantity}</td>
+            <td>$${item.unit_price}</td>
+            <td>$${Number(item.unit_price) * item.quantity}</td>
+          </tr>`,
+      )
+      .join('');
+
+    await this.transporter.sendMail({
+      from: this.config.get<string>('MAIL_FROM'),
+      to: email,
+      subject: `Confirmación de orden #${order.id.slice(0, 8)}`,
+      html: `
+        <h2>¡Gracias por tu compra!</h2>
+        <p>Tu orden ha sido recibida y está siendo procesada.</p>
+        <h3>Detalle de tu orden</h3>
+        <table border="1" cellpadding="8" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Precio unitario</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsList}
+          </tbody>
+        </table>
+        <p><strong>Total: $${order.total}</strong></p>
+        <p><strong>Dirección de envío:</strong> ${order.shipping_address}</p>
+        <p><strong>Número de orden:</strong> ${order.id}</p>
+        <p style="color: #666; font-size: 13px;">Guarda este número — lo necesitarás junto con tu correo para rastrear tu pedido en nuestro sitio.</p>
+        <p>Te notificaremos cuando tu pedido sea enviado.</p>
+      `,
+    });
+    this.logger.log(`Email de confirmación enviado a ${email}`);
+  }
+
+  async sendPaymentConfirmation(order: Order, email: string): Promise<void> {
+    await this.transporter.sendMail({
+      from: this.config.get<string>('MAIL_FROM'),
+      to: email,
+      subject: `Pago confirmado - Orden  #${order.id.slice(0, 8)}`,
+      html: `
+        <h2>¡Pago recibido!</h2>
+        <p>Hemos confirmado tu pago por <strong>$${order.total}</strong>.</p>
+        <p>Tu orden está siendo preparada.</p>
+        <p><strong>ID de pago:</strong> ${order.mp_payment_id}</p>
+      `,
+    });
+    this.logger.log(`Email de pago confirmado enviado a ${email}`);
+  }
+
+  async sendShippingNotification(order: Order, email: string): Promise<void> {
+    await this.transporter.sendMail({
+      from: this.config.get<string>('MAIL_FROM'),
+      to: email,
+      subject: `Tu orden #${order.id.slice(0, 8)} ha sido enviada`,
+      html: `
+        <h2>¡Tu pedido está en camino!</h2>
+        <p>Tu orden ha sido enviada a:</p>
+        <p><strong>${order.shipping_address}</strong></p>
+        <p>Pronto recibirás tu pedido.</p>
+      `,
+    });
+
+    this.logger.log(`Email de envío notificado a ${email}`);
+  }
+
+  async sendPasswordReset(email: string, resetUrl: string): Promise<void> {
+    await this.transporter.sendMail({
+      from: this.config.get<string>('MAIL_FROM'),
+      to: email,
+      subject: 'Recupera tu contraseña',
+      html: `
+        <h2>Recupera tu contraseña</h2>
+        <p>Recibimos una solicitud para restablecer tu contraseña.</p>
+        <p>Haz clic en el siguiente enlace para crear una nueva (válido por 1 hora):</p>
+        <p><a href="${resetUrl}">${resetUrl}</a></p>
+        <p>Si no solicitaste esto, puedes ignorar este correo.</p>
+      `,
+    });
+    this.logger.log(`Email de recuperación de contraseña enviado a ${email}`);
+  }
+
+  async sendEmailVerification(email: string, verifyUrl: string): Promise<void> {
+    await this.transporter.sendMail({
+      from: this.config.get<string>('MAIL_FROM'),
+      to: email,
+      subject: 'Confirma tu correo — Sprint Custom',
+      html: `
+        <h2>¡Bienvenido a Sprint Custom!</h2>
+        <p>Confirma tu correo para activar todos los beneficios de tu cuenta.</p>
+        <p><a href="${verifyUrl}">${verifyUrl}</a></p>
+        <p>Si no creaste esta cuenta, puedes ignorar este correo.</p>
+      `,
+    });
+    this.logger.log(`Email de verificación enviado a ${email}`);
+  }
+}

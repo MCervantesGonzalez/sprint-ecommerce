@@ -1,0 +1,283 @@
+"use client";
+
+import { useState } from "react";
+import { useParams } from "next/navigation";
+import { useProduct, useProductDesigns } from "@/hooks/useProducts";
+import { useAddToCart } from "@/hooks/useCart";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ProductVariant, ProductDesign } from "@/types";
+import Image from "next/image";
+
+export default function ProductPage() {
+  const { id } = useParams<{ id: string }>();
+  const { data: product, isLoading: loadingProduct } = useProduct(id);
+  const { data: designs, isLoading: loadingDesigns } = useProductDesigns(id);
+  const addToCart = useAddToCart();
+
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
+    null,
+  );
+  const [selectedDesign, setSelectedDesign] = useState<ProductDesign | null>(
+    null,
+  );
+
+  const handleAddToCart = () => {
+    if (!selectedVariant) return;
+
+    addToCart.mutate({
+      variantId: selectedVariant.id,
+      designId: selectedDesign?.design.id,
+      quantity: 1,
+      variant: selectedVariant,
+      design: selectedDesign?.design ?? null,
+    });
+  };
+
+  const totalPrice = selectedVariant
+    ? selectedVariant.base_price + (selectedDesign?.extra_price ?? 0)
+    : null;
+
+  const displayImage = selectedVariant?.image_url ?? product?.image_url;
+
+  if (loadingProduct) {
+    return (
+      <div className="space-y-4 sm:space-y-6 px-3 sm:px-0">
+        <Skeleton className="h-8 w-64" />
+        <Skeleton className="h-4 w-96" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
+          <Skeleton className="h-64 sm:h-80 w-full rounded-md" />
+          <div className="space-y-3 sm:space-y-4">
+            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="text-center py-12 px-3 sm:px-0">
+        <p className="text-sm sm:text-base text-muted-foreground">
+          Producto no encontrado.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4 sm:space-y-8 px-3 sm:px-0">
+      {/* Header */}
+      <div className="space-y-1 sm:space-y-2">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <h1 className="text-xl sm:text-3xl font-bold">{product.name}</h1>
+          <Badge className="text-xs sm:text-sm">{product.category}</Badge>
+        </div>
+        {product.description && (
+          <p className="text-xs sm:text-base text-muted-foreground">
+            {product.description}
+          </p>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+        {/* Imagen */}
+        <div className="max-w-96 aspect-square bg-gray-100 rounded-xl overflow-hidden relative">
+          {displayImage ? (
+            <Image
+              src={displayImage}
+              alt={
+                selectedVariant
+                  ? `${product.name} — ${selectedVariant.color}`
+                  : product.name
+              }
+              fill
+              className="object-contain p-6"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-8xl">
+              {product.category === "TAZA"
+                ? "☕"
+                : product.category === "PLAYERA"
+                  ? "👕"
+                  : product.category === "HOODIE"
+                    ? "🧥"
+                    : "🛍️"}
+            </div>
+          )}
+        </div>
+
+        {/* Info — variantes y botón */}
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-bold">{product.name}</h1>
+              <Badge>{product.category}</Badge>
+            </div>
+            {product.description && (
+              <p className="text-muted-foreground">{product.description}</p>
+            )}
+          </div>
+
+          {/* Variantes */}
+          <div>
+            <h2 className="text-lg font-semibold mb-3">
+              Variantes disponibles
+            </h2>
+            <div className="space-y-2">
+              {product.variants
+                .filter((v) => v.active)
+                .map((variant) => (
+                  <div
+                    key={variant.id}
+                    role="button"
+                    tabIndex={0}
+                    className={`cursor-pointer rounded-xl border p-4 flex items-center justify-between transition-colors ${
+                      selectedVariant?.id === variant.id
+                        ? "border-brand-primary ring-1 ring-brand-primary"
+                        : "hover:border-brand-primary border-border"
+                    }`}
+                    onClick={() => setSelectedVariant(variant)}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && setSelectedVariant(variant)
+                    }
+                  >
+                    <div className="flex items-center gap-3">
+                      {variant.image_url && (
+                        <div className="relative h-10 w-10 rounded-md overflow-hidden bg-gray-100 flex-shrink-0">
+                          <Image
+                            src={variant.image_url}
+                            alt={variant.color}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="space-y-1">
+                        <p className="font-medium">
+                          {variant.color} — {variant.size}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Stock: {variant.stock}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {variant.compare_price &&
+                        variant.compare_price > variant.base_price && (
+                          <span className="text-sm text-brand-medium line-through">
+                            ${variant.compare_price}
+                          </span>
+                        )}
+                      <span className="font-bold text-lg text-brand-primary">
+                        ${variant.base_price}
+                      </span>
+                      {variant.compare_price &&
+                        variant.compare_price > variant.base_price && (
+                          <span className="text-xs font-bold bg-brand-primary text-white px-1.5 py-0.5 rounded">
+                            -
+                            {Math.round(
+                              (1 - variant.base_price / variant.compare_price) *
+                                100,
+                            )}
+                            %
+                          </span>
+                        )}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          {/* Precio total y botón */}
+          <div className="space-y-3 pt-4 border-t">
+            {totalPrice !== null && (
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Precio total</span>
+                <span className="text-2xl font-bold text-brand-primary">
+                  ${totalPrice.toFixed(2)}
+                </span>
+              </div>
+            )}
+            <Button
+              className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white"
+              size="lg"
+              disabled={!selectedVariant || addToCart.isPending}
+              onClick={handleAddToCart}
+            >
+              {addToCart.isPending
+                ? "Agregando..."
+                : !selectedVariant
+                  ? "Selecciona una variante"
+                  : "Agregar al carrito"}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Diseños disponibles */}
+      <div className="space-y-3 sm:space-y-4">
+        <h2 className="text-lg sm:text-2xl font-semibold">
+          Diseños disponibles
+        </h2>
+        {loadingDesigns ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-40 w-full rounded-md" />
+            ))}
+          </div>
+        ) : !designs?.length ? (
+          <p className="text-xs sm:text-base text-muted-foreground">
+            No hay diseños disponibles para este producto.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
+            {designs.map((pd) => (
+              <div
+                key={pd.id}
+                role="button"
+                tabIndex={0}
+                className={`cursor-pointer rounded-lg sm:rounded-xl border transition-colors ${
+                  selectedDesign?.id === pd.id
+                    ? "border-brand-primary ring-1 ring-brand-primary"
+                    : "hover:border-brand-primary border-border"
+                }`}
+                onClick={() =>
+                  setSelectedDesign(selectedDesign?.id === pd.id ? null : pd)
+                }
+                onKeyDown={(e) =>
+                  e.key === "Enter" &&
+                  setSelectedDesign(selectedDesign?.id === pd.id ? null : pd)
+                }
+              >
+                <div className="p-2 sm:p-3 space-y-1.5 sm:space-y-2">
+                  <div className="relative w-full h-28 sm:h-32 rounded-md overflow-hidden bg-gray-100">
+                    <Image
+                      src={pd.design.image_url}
+                      alt={pd.design.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <p className="font-medium text-xs sm:text-sm truncate">
+                    {pd.design.name}
+                  </p>
+                  {pd.extra_price > 0 && (
+                    <p className="text-xs text-muted-foreground">
+                      +${pd.extra_price}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
