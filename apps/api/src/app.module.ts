@@ -44,9 +44,9 @@ import { AddressesModule } from './addresses/addresses.module';
             : false,
 
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-
+        migrations: [__dirname + '/migrations/*{.ts,.js}'],
+        migrationsRun: config.get('NODE_ENV') === 'production',
         synchronize: config.get('NODE_ENV') !== 'production',
-
         logging: config.get('NODE_ENV') === 'development',
       }),
     }),
